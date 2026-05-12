@@ -1,0 +1,40 @@
+import httpStatus from 'http-status-codes';
+
+import { envVars } from "../config/env";
+import AppError from "../errorHelpers/appError";
+import { IUser } from "../modules/user/user.interface";
+import { User } from '../modules/user/user.model';
+import { JwtPayload } from 'jsonwebtoken';
+import { generateToken, verifyToken } from './jwt';
+
+export const createUserTokens = (user: Partial<IUser>) => {
+
+    const tokenPayload = {
+        userId: user._id,
+        email: user.email,
+        role: user.role
+    }
+    const accessToken = generateToken(tokenPayload, envVars.JWT_ACCESS_SECRET, envVars.JWT_ACCESS_EXPIRES)
+    const refreshToken = generateToken(tokenPayload, envVars.JWT_REFRESH_SECRET, envVars.JWT_REFRESH_EXPIRES)
+    return {
+        accessToken,
+        refreshToken
+    }
+}
+
+export const createNewAccessTokenWithRefreshToken = async (refreshToken: string) => {
+    const verifiedRefreshToken = verifyToken(refreshToken, envVars.JWT_REFRESH_SECRET) as JwtPayload;
+    const isUserExist = await User.findOne({ email: verifiedRefreshToken.email })
+
+    if (!isUserExist) {
+        throw new AppError(httpStatus.NOT_FOUND, "User does not exist! Please register.")
+    }
+
+    const tokenPayload = {
+        userId: isUserExist._id,
+        email: isUserExist.email,
+        role: isUserExist.role
+    }
+    const accessToken = generateToken(tokenPayload, envVars.JWT_ACCESS_SECRET, envVars.JWT_ACCESS_EXPIRES)
+    return accessToken;
+}
