@@ -4,8 +4,8 @@ import { StudentProfile, TeacherProfile } from "../modules/user/user.model";
 export const getProfileByRole = async (user: any) => {
     if (user.role === Role.TEACHER) {
         return await TeacherProfile.findOne({ userId: user._id })
-            // .populate("assignedSubjects")
-            // .populate("assignedCourses")
+            .populate("subjects")
+            .populate("assignedCourses")
             .lean();
     }
 
