@@ -42,6 +42,7 @@ const TeacherProfileSchema = new Schema<ITeacherProfile>(
       ref: "User",
       required: true,
       unique: true,
+      index: true,
     },
 
     address: {
@@ -106,6 +107,7 @@ const StudentProfileSchema = new Schema<IStudentProfile>(
       ref: "User",
       required: true,
       unique: true,
+      index: true,
     },
 
     address: {

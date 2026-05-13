@@ -58,6 +58,32 @@ const getAllUsers = catchAsync(async (req: Request, res: Response, next: NextFun
     })
 })
 
+const getAllStudents = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const query = req.query;
+    const result = await UserServices.getAllStudents(query as Record<string, string>);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.CREATED,
+        message: "All Students Retrieved Successfully",
+        data: result.data,
+        meta: result.meta
+    })
+})
+
+const getAllTeachers = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const query = req.query;
+    const result = await UserServices.getAllTeachers(query as Record<string, string>);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.CREATED,
+        message: "All Teachers Retrieved Successfully",
+        data: result.data,
+        meta: result.meta
+    })
+})
+
 const updateProfile = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const payload = req.body;
 
@@ -102,6 +128,8 @@ export const UserControllers = {
     createUser,
     getMe,
     getAllUsers,
+    getAllStudents,
+    getAllTeachers,
     getSingleUser,
     deleteUser,
     updateUser,
