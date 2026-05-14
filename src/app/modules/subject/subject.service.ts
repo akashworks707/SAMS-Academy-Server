@@ -1,3 +1,6 @@
+import { QueryBuilder } from "../../utils/QueryBuilder";
+import { ClassService } from "../class/class.service";
+import { subjectSearchableFields } from "./subject.constants";
 import { SubjectModel } from "./subject.model";
 
 const createSubject = async (payload: any) => {
@@ -6,21 +9,53 @@ const createSubject = async (payload: any) => {
   return { data: result };
 };
 
-const getAllSubjects = async () => {
-  const result = await SubjectModel.find({
-    isDeleted: false,
-  });
+const getAllSubjects = async (query: Record<string, string>) => {
 
-  return { data: result };
+  const baseQuery = SubjectModel.find({ isDeleted: false });
+
+  const queryBuilder = new QueryBuilder(baseQuery, query);
+
+  const subjectsData = queryBuilder
+    .filter()
+    .search(subjectSearchableFields)
+    .sort()
+    .fields()
+    .paginate();
+
+  const [data, meta] = await Promise.all([
+    subjectsData.build(),
+    queryBuilder.getMeta()
+  ])
+
+  return {
+    data,
+    meta
+  }
 };
 
-const getAllTrashSubjects = async () => {
-  const result = await SubjectModel.find({
-    isDeleted: true,
-  });
+const getAllTrashSubjects = async (query: Record<string, string>) => {
+  const baseQuery = SubjectModel.find({ isDeleted: true });
 
-  return { data: result };
+  const queryBuilder = new QueryBuilder(baseQuery, query);
+
+  const subjectsData = queryBuilder
+    .filter()
+    .search(subjectSearchableFields)
+    .sort()
+    .fields()
+    .paginate();
+
+  const [data, meta] = await Promise.all([
+    subjectsData.build(),
+    queryBuilder.getMeta()
+  ])
+
+  return {
+    data,
+    meta
+  }
 };
+
 
 const getSingleSubject = async (id: string) => {
   const result = await SubjectModel.findById(id);

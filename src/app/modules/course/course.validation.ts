@@ -19,8 +19,7 @@ export const createCourseZodSchema = z.object({
 
   class: z.string(),
 
-  // subject: z.array(z.string()),
-  // assignedTeachers: z.array(z.string()).optional(),
+  batch: z.string(),
 
   assignSubWithTeacher: z.array(
     z.object({

@@ -13,22 +13,26 @@ const createClass = async (req: Request, res: Response) => {
 };
 
 const getAllClasses = async (req: Request, res: Response) => {
-    const result = await ClassService.getAllClasses();
+    const query = req.query;
+    const result = await ClassService.getAllClasses(query as Record<string, string>);
 
     res.status(httpStatus.OK).json({
         success: true,
         message: "All Classes Retrieved Successfully",
         data: result.data,
+        meta: result.meta
     });
 };
 
 const getAllTrashClasses = async (req: Request, res: Response) => {
-    const result = await ClassService.getAllClasses();
+    const query = req.query;
+    const result = await ClassService.getAllTrashClasses(query as Record<string, string>);
 
     res.status(httpStatus.OK).json({
         success: true,
         message: "All Trash Classes Retrieved Successfully",
-        data: result.data
+        data: result.data,
+        meta: result.meta
     });
 };
 

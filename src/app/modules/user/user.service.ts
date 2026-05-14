@@ -184,7 +184,7 @@ const getAllUsers = async (query: Record<string, string>) => {
 };
 
 const getAllStudents = async (query: Record<string, string>) => {
-    const baseQuery = StudentProfile.find().populate("userId", "-password");
+    const baseQuery = StudentProfile.find().populate("userId", "-password").populate("enrolledCourses");
     const queryBuilder = new QueryBuilder(baseQuery, query);
 
     const usersData = queryBuilder
@@ -209,7 +209,6 @@ const getAllTeachers = async (query: Record<string, string>) => {
     const baseQuery = TeacherProfile.find().populate("userId", "-password");
 
     const queryBuilder = new QueryBuilder(baseQuery, query);
-    // const queryBuilder = new QueryBuilder(TeacherProfile.find(), query).populate("User")
     const usersData = queryBuilder
         .filter()
         .search(userSearchableFields)
@@ -237,51 +236,17 @@ const getSingleUser = async (id: string) => {
     let profile = null;
 
     if (user.role === Role.TEACHER) {
-        profile = await TeacherProfile.findOne({ userId: id }).populate("userId", "-password");
+        profile = await TeacherProfile.findOne({ userId: id }).populate("userId", "-password").populate("assignedSubjects").populate("assignedCourses");
     }
 
     if (user.role === Role.STUDENT) {
-        profile = await StudentProfile.findOne({ userId: id }).populate("userId", "-password");
+        profile = await StudentProfile.findOne({ userId: id }).populate("userId", "-password").populate("enrolledCourses");
     }
 
     return {
         data: { ...user.toObject(), profile },
     }
 };
-
-
-// const getSingleUser = async (id: string) => {
-//     const user = await User.findById(id);
-
-//     if (!user) {
-//         throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
-//     }
-
-//     const profile = await getProfileByRole(user);
-
-//     return {
-//         data: { ...user.toObject(), profile },
-//     };
-// };
-
-
-// const deleteUser = async (id: string) => {
-//     const user = await User.findById(id);
-//     if (!user) {
-//         throw new AppError(httpStatus.NOT_FOUND, "User Not Found")
-//     }
-//     if(user.role === Role.TEACHER) {
-//         await TeacherProfile.findOneAndDelete({ userId: id });
-//     }
-//     if(user.role === Role.STUDENT) {
-//         await StudentProfile.findOneAndDelete({ userId: id });
-//     }
-//     await User.findByIdAndDelete(id);
-
-//     return {
-//         data: null
-//     }
-// };
 
 
 const deleteUser = async (id: string) => {

@@ -33,13 +33,15 @@ const getAllCourses = async (
     req: Request,
     res: Response
 ) => {
+    const query = req.query;
     const result =
-        await CourseService.getAllCourses();
+        await CourseService.getAllCourses(query as Record<string, string>);
 
     res.status(httpStatus.OK).json({
         success: true,
         message: "All Courses Retrieved Successfully",
         data: result.data,
+        meta: result.meta
     });
 };
 
@@ -47,14 +49,16 @@ const getAllTrashCourses = async (
     req: Request,
     res: Response
 ) => {
+    const query = req.query;
     const result =
-        await CourseService.getAllTrashCourses();
+        await CourseService.getAllTrashCourses(query as Record<string, string>);
 
     res.status(httpStatus.OK).json({
         success: true,
         message:
             "All Trash Courses Retrieved Successfully",
         data: result.data,
+        meta: result.meta
     });
 };
 

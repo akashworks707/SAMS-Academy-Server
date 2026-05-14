@@ -1,3 +1,7 @@
+import AppError from "../../errorHelpers/appError";
+import { QueryBuilder } from "../../utils/QueryBuilder";
+import { TeacherProfile } from "../user/user.model";
+import { courseSearchableFields } from "./course.constants";
 import { ICourse } from "./course.interface";
 import { CourseModel } from "./course.model";
 
@@ -5,19 +9,54 @@ const createCourse = async (
     payload: Partial<ICourse>
 ) => {
 
-    console.log("course payload", payload)
+    const isExistingCourse = await CourseModel.findOne({
+        name: payload.title,
+        class: payload.class
+    });
+
+    if (isExistingCourse) {
+        throw new AppError(400, "Course already exists");
+    }
+
     const result = await CourseModel.create(payload);
+
+    await Promise.all(
+        payload.assignSubWithTeacher?.map(async (item) => {
+            const teacher = item.teacher.toString();
+            const subject = item.subject.toString();
+
+            await TeacherProfile.findByIdAndUpdate(
+                teacher,
+                {
+                    $addToSet: {
+                        assignedSubjects: subject,
+                        assignedCourses: result._id.toString(),
+                    },
+                },
+                { new: true }
+            );
+        }) || []
+
+
+    );
 
     return { data: result };
 };
 
-const getAllCourses = async () => {
-    const result = await CourseModel.find({
-        isDeleted: false,
-    })
+const getAllCourses = async (query: Record<string, string>) => {
+
+    const baseQuery = CourseModel.find({ isDeleted: false });
+
+    const queryBuilder = new QueryBuilder(baseQuery, query);
+
+    const data = await queryBuilder
+        .filter()
+        .search(courseSearchableFields)
+        .sort()
+        .fields()
+        .paginate()
+        .build()
         .populate("class")
-        // .populate("subject")
-        // .populate("assignedTeachers");
         .populate({
             path: "assignSubWithTeacher.subject",
             model: "Subject",
@@ -26,15 +65,44 @@ const getAllCourses = async () => {
             path: "assignSubWithTeacher.teacher",
             model: "TeacherProfile",
         });
-    return { data: result };
+
+    const meta = await queryBuilder.getMeta();
+
+    return {
+        data,
+        meta,
+    };
 };
 
-const getAllTrashCourses = async () => {
-    const result = await CourseModel.find({
-        isDeleted: true,
-    });
+const getAllTrashCourses = async (query: Record<string, string>) => {
 
-    return { data: result };
+    const baseQuery = CourseModel.find({ isDeleted: true });
+
+    const queryBuilder = new QueryBuilder(baseQuery, query);
+
+    const data = await queryBuilder
+        .filter()
+        .search(courseSearchableFields)
+        .sort()
+        .fields()
+        .paginate()
+        .build()
+        .populate("class")
+        .populate({
+            path: "assignSubWithTeacher.subject",
+            model: "Subject",
+        })
+        .populate({
+            path: "assignSubWithTeacher.teacher",
+            model: "TeacherProfile",
+        });
+
+    const meta = await queryBuilder.getMeta();
+
+    return {
+        data,
+        meta,
+    };
 };
 
 const getSingleCourse = async (slug: string) => {
@@ -43,8 +111,6 @@ const getSingleCourse = async (slug: string) => {
         isDeleted: false,
     })
         .populate("class")
-        // .populate("subject")
-        // .populate("assignedTeachers");
         .populate({
             path: "assignSubWithTeacher",
             populate: [
@@ -59,14 +125,6 @@ const getSingleCourse = async (slug: string) => {
                 },
             ],
         });
-    // .populate({
-    //     path: "assignSubWithTeacher.teacher",
-    //     model: "TeacherProfile",
-    //     populate: {
-    //         path: "userId",
-    //         model: "User",
-    //     },
-    // });
 
     return { data: result };
 };

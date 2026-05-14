@@ -59,19 +59,12 @@ const courseSchema = new Schema<ICourse>(
             required: true,
         },
 
-        // subject: [
-        //     {
-        //         type: Schema.Types.ObjectId,
-        //         ref: "Subject",
-        //     },
-        // ],
+        batch: {
+            type: String,
+            trim: true,
+            unique: true,
+        },
 
-        // assignedTeachers: [
-        //     {
-        //         type: Schema.Types.ObjectId,
-        //         ref: "TeacherProfile",
-        //     },
-        // ],
         assignSubWithTeacher: [
             {
                 subject: {

@@ -5,6 +5,7 @@ import { ZoomRoutes } from "../modules/zoom/zoom.routes";
 import { classRoutes } from "../modules/class/class.route";
 import { subjectRoutes } from "../modules/subject/subject.route";
 import { courseRoutes } from "../modules/course/course.route";
+import { EnrollmentRoutes } from "../modules/enrollment/enrollment.route";
 
 export const router = Router();
 
@@ -32,6 +33,10 @@ const moduleRoutes = [
     {
         path: "/course",
         route: courseRoutes
+    },
+    {
+        path: "/enrollment",
+        route: EnrollmentRoutes
     }
 ]
 

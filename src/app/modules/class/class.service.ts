@@ -1,3 +1,5 @@
+import { QueryBuilder } from "../../utils/QueryBuilder";
+import { classSearchableFields } from "./class.constants";
 import { ClassModel } from "./class.model";
 
 const createClass = async (payload: any) => {
@@ -6,17 +8,52 @@ const createClass = async (payload: any) => {
   return { data: result };
 };
 
-const getAllClasses = async () => {
-  const result = await ClassModel.find({ isDeleted: false });
+const getAllClasses = async (query: Record<string, string>) => {
 
-  return { data: result };
+    const baseQuery = ClassModel.find({isDeleted: false});
+
+    const queryBuilder = new QueryBuilder(baseQuery, query);
+    const classesData = queryBuilder
+        .filter()
+        .search(classSearchableFields)
+        .sort()
+        .fields()
+        .paginate();
+
+    const [data, meta] = await Promise.all([
+        classesData.build(),
+        queryBuilder.getMeta()
+    ])
+
+    return {
+        data,
+        meta
+    }
+
 };
 
-const getAllTrashClasses = async () => {
-  const result = await ClassModel.find({ isDeleted: true });
+const getAllTrashClasses = async (query: Record<string, string>) => {
+    const baseQuery = ClassModel.find({ isDeleted: true });
 
-  return { data: result };
+    const queryBuilder = new QueryBuilder(baseQuery, query);
+    const classesData = queryBuilder
+        .filter()
+        .search(classSearchableFields)
+        .sort()
+        .fields()
+        .paginate();
+
+    const [data, meta] = await Promise.all([
+        classesData.build(),
+        queryBuilder.getMeta()
+    ])
+
+    return {
+        data,
+        meta
+    }
 };
+
 
 const getSingleClass = async (id: string) => {
   const result = await ClassModel.findById(id);

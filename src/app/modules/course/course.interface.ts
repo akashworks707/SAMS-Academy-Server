@@ -21,6 +21,8 @@ export interface ICourse {
 
   class: Types.ObjectId;
 
+  batch?: string;
+
   assignSubWithTeacher: {
     subject: Types.ObjectId;
     teacher: Types.ObjectId;
@@ -60,5 +62,3 @@ export interface ICourse {
 
   isActive?: boolean;
 }
-
-export interface ICourseModel extends Model<ICourse> { }

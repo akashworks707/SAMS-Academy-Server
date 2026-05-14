@@ -11,7 +11,7 @@ export const getProfileByRole = async (user: any) => {
 
     if (user.role === Role.STUDENT) {
         return await StudentProfile.findOne({ userId: user._id })
-            // .populate("enrolledCourses")
+            .populate("enrolledCourses")
             .lean();
     }
 

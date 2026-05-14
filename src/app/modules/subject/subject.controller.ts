@@ -21,13 +21,15 @@ const getAllSubjects = async (
   req: Request,
   res: Response
 ) => {
+  const query = req.query;
   const result =
-    await SubjectService.getAllSubjects();
+    await SubjectService.getAllSubjects(query as Record<string, string>);
 
   res.status(httpStatus.OK).json({
     success: true,
     message: "All Subjects Retrieved Successfully",
     data: result.data,
+    meta: result.meta
   });
 };
 
@@ -35,14 +37,16 @@ const getAllTrashSubjects = async (
   req: Request,
   res: Response
 ) => {
+  const query = req.query;
   const result =
-    await SubjectService.getAllTrashSubjects();
+    await SubjectService.getAllTrashSubjects(query as Record<string, string>);
 
   res.status(httpStatus.OK).json({
     success: true,
     message:
       "All Trash Subjects Retrieved Successfully",
     data: result.data,
+    meta: result.meta
   });
 };
 

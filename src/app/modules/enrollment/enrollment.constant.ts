@@ -1,0 +1,1 @@
+export const enrollmentSearchableFields = ["student.name", "course.title", "referredBy.name"];
