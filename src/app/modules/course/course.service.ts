@@ -4,6 +4,8 @@ import { CourseModel } from "./course.model";
 const createCourse = async (
     payload: Partial<ICourse>
 ) => {
+
+    console.log("course payload", payload)
     const result = await CourseModel.create(payload);
 
     return { data: result };
@@ -14,9 +16,16 @@ const getAllCourses = async () => {
         isDeleted: false,
     })
         .populate("class")
-        .populate("subject")
-        .populate("assignedTeachers");
-
+        // .populate("subject")
+        // .populate("assignedTeachers");
+        .populate({
+            path: "assignSubWithTeacher.subject",
+            model: "Subject",
+        })
+        .populate({
+            path: "assignSubWithTeacher.teacher",
+            model: "TeacherProfile",
+        });
     return { data: result };
 };
 
@@ -34,13 +43,30 @@ const getSingleCourse = async (slug: string) => {
         isDeleted: false,
     })
         .populate("class")
-        .populate("subject")
+        // .populate("subject")
+        // .populate("assignedTeachers");
         .populate({
-            path: "assignedTeachers",
-            populate: {
-                path: "userId",
-            },
+            path: "assignSubWithTeacher",
+            populate: [
+                { path: "subject", model: "Subject" },
+                {
+                    path: "teacher",
+                    model: "TeacherProfile",
+                    populate: {
+                        path: "userId",
+                        model: "User",
+                    },
+                },
+            ],
         });
+    // .populate({
+    //     path: "assignSubWithTeacher.teacher",
+    //     model: "TeacherProfile",
+    //     populate: {
+    //         path: "userId",
+    //         model: "User",
+    //     },
+    // });
 
     return { data: result };
 };

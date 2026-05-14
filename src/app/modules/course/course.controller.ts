@@ -11,10 +11,13 @@ const createCourse = async (
 ) => {
     const file = req.file;
 
+    console.log("File in controller ", file)
     const payload = {
         ...req.body,
         thumbnail: file?.path,
     };
+
+    console.log("Payload in controller ", payload)
     const result = await CourseService.createCourse(
         payload
     );

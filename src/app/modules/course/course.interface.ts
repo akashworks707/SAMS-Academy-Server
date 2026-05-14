@@ -21,9 +21,10 @@ export interface ICourse {
 
   class: Types.ObjectId;
 
-  subject: Types.ObjectId[];
-
-  assignedTeachers?: Types.ObjectId[];
+  assignSubWithTeacher: {
+    subject: Types.ObjectId;
+    teacher: Types.ObjectId;
+  }[];
 
   regularPrice?: number;
 
@@ -60,4 +61,4 @@ export interface ICourse {
   isActive?: boolean;
 }
 
-export interface ICourseModel extends Model<ICourse> {}
+export interface ICourseModel extends Model<ICourse> { }

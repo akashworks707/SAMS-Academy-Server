@@ -163,8 +163,8 @@ const getMe = async (userId: string) => {
 
 
 const getAllUsers = async (query: Record<string, string>) => {
-
-    const queryBuilder = new QueryBuilder(User.find(), query)
+    const baseQuery = User.find().select("-password");
+    const queryBuilder = new QueryBuilder(baseQuery, query);
     const usersData = queryBuilder
         .filter()
         .search(userSearchableFields)
@@ -184,8 +184,9 @@ const getAllUsers = async (query: Record<string, string>) => {
 };
 
 const getAllStudents = async (query: Record<string, string>) => {
+    const baseQuery = StudentProfile.find().populate("userId", "-password");
+    const queryBuilder = new QueryBuilder(baseQuery, query);
 
-    const queryBuilder = new QueryBuilder(User.find({role: Role.STUDENT}), query)
     const usersData = queryBuilder
         .filter()
         .search(userSearchableFields)
@@ -205,8 +206,10 @@ const getAllStudents = async (query: Record<string, string>) => {
 };
 
 const getAllTeachers = async (query: Record<string, string>) => {
+    const baseQuery = TeacherProfile.find().populate("userId", "-password");
 
-    const queryBuilder = new QueryBuilder(User.find({role: Role.TEACHER}), query)
+    const queryBuilder = new QueryBuilder(baseQuery, query);
+    // const queryBuilder = new QueryBuilder(TeacherProfile.find(), query).populate("User")
     const usersData = queryBuilder
         .filter()
         .search(userSearchableFields)
@@ -226,7 +229,7 @@ const getAllTeachers = async (query: Record<string, string>) => {
 };
 
 const getSingleUser = async (id: string) => {
-    const user = await User.findById(id);
+    const user = await User.findById(id).select("-password");
     if (!user) {
         throw new AppError(httpStatus.NOT_FOUND, "User Not Found")
     }
@@ -234,11 +237,11 @@ const getSingleUser = async (id: string) => {
     let profile = null;
 
     if (user.role === Role.TEACHER) {
-        profile = await TeacherProfile.findOne({ userId: id });
+        profile = await TeacherProfile.findOne({ userId: id }).populate("userId", "-password");
     }
 
     if (user.role === Role.STUDENT) {
-        profile = await StudentProfile.findOne({ userId: id });
+        profile = await StudentProfile.findOne({ userId: id }).populate("userId", "-password");
     }
 
     return {

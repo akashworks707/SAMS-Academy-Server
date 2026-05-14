@@ -19,9 +19,15 @@ export const createCourseZodSchema = z.object({
 
   class: z.string(),
 
-  subject: z.array(z.string()),
+  // subject: z.array(z.string()),
+  // assignedTeachers: z.array(z.string()).optional(),
 
-  assignedTeachers: z.array(z.string()).optional(),
+  assignSubWithTeacher: z.array(
+    z.object({
+      subject: z.string(),
+      teacher: z.string(),
+    })
+  ),
 
   regularPrice: z.number().optional(),
 

@@ -59,18 +59,32 @@ const courseSchema = new Schema<ICourse>(
             required: true,
         },
 
-        subject: [
-            {
-                type: Schema.Types.ObjectId,
-                ref: "Subject",
-            },
-        ],
+        // subject: [
+        //     {
+        //         type: Schema.Types.ObjectId,
+        //         ref: "Subject",
+        //     },
+        // ],
 
-        assignedTeachers: [
+        // assignedTeachers: [
+        //     {
+        //         type: Schema.Types.ObjectId,
+        //         ref: "TeacherProfile",
+        //     },
+        // ],
+        assignSubWithTeacher: [
             {
-                type: Schema.Types.ObjectId,
-                ref: "TeacherProfile",
-            },
+                subject: {
+                    type: Schema.Types.ObjectId,
+                    ref: "Subject",
+                    required: true,
+                },
+                teacher: {
+                    type: Schema.Types.ObjectId,
+                    ref: "TeacherProfile",
+                    required: true,
+                }
+            }
         ],
 
         regularPrice: {
