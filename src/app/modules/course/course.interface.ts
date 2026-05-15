@@ -44,9 +44,15 @@ export interface ICourse {
 
   totalClasses?: number;
 
-  liveClassLinks?: string[];
+  // liveClasses?: {
+  //   title: string;
+  //   liveLink: string;
+  // };
 
-  recordedClassLinks?: string[];
+  // recordedClassLinks?: {
+  //   title: string;
+  //   videoLink: string;
+  // }[];
 
   certificate?: boolean;
 

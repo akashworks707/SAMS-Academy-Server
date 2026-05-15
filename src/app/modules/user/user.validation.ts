@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { Role } from "./user.interface";
+import { date } from "zod/v4";
 
 // Create User Schema
 // export const createUserZodSchema = z.object({
@@ -23,6 +24,14 @@ import { Role } from "./user.interface";
 // });
 
 
+const addressZodSchema = z.object({
+  division: z.string().optional(),
+  district: z.string().optional(),
+  thana: z.string().optional(),
+  union: z.string().optional(),
+});
+
+
 export const createUserZodSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Invalid email"),
@@ -32,8 +41,10 @@ export const createUserZodSchema = z.object({
 
   role: z.enum([Role.STUDENT, Role.TEACHER, Role.ADMIN]).optional(),
 
+  dateOfBirth: z.coerce.date().optional(),
+
   // ---------------- TEACHER PROFILE ----------------
-  address: z.string().optional(),
+  address: addressZodSchema.optional(),
   qualification: z.string().optional(),
   experience: z.number().optional(),
   designation: z.string().optional(),
@@ -55,20 +66,4 @@ export const createUserZodSchema = z.object({
 
 
 // Update User Schema
-export const updateUserZodSchema = z.object({
-  name: z.string({ invalid_type_error: "Name must be a string" }).optional(),
-  email: z
-    .string({ invalid_type_error: "Email must be a string" })
-    .email({ message: "Invalid email address" })
-    .optional(),
-  password: z
-    .string({ invalid_type_error: "Password must be a string" })
-    .min(6, { message: "Password must be at least 6 characters long" })
-    .optional(),
-  picture: z.string({ invalid_type_error: "Picture must be a string" }).optional(),
-  role: z.enum([Role.STUDENT, Role.TEACHER, Role.ADMIN], {
-    invalid_type_error: "Role must be either ADMIN or TEACHER or STUDENT",
-  }).optional(),
-  phone: z
-    .string({ invalid_type_error: "Phone number must be a string" }).optional()
-});
+export const updateUserZodSchema =  createUserZodSchema.partial();

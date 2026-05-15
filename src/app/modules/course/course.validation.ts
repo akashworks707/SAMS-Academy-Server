@@ -44,9 +44,19 @@ export const createCourseZodSchema = z.object({
 
   totalClasses: z.number().optional(),
 
-  liveClassLinks: z.array(z.string()).optional(),
+  // liveClasses: z.array(
+  //   z.object({
+  //     title: z.string(),
+  //     liveLink: z.string(),
+  //   })
+  // ).optional(),
 
-  recordedClassLinks: z.array(z.string()).optional(),
+  // recordedClassLinks: z.array(
+  //   z.object({
+  //     title: z.string(),
+  //     videoLink: z.string(),
+  //   })
+  // ).optional(),
 
   certificate: z.boolean().optional(),
 

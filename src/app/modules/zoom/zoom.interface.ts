@@ -1,14 +1,35 @@
+
+
+import { Types } from "mongoose";
+
+export enum liveMeetingStatus {
+  SCHEDULED = "SCHEDULED",
+  LIVE = "LIVE",
+  COMPLETED = "COMPLETED",
+  CANCELLED = "CANCELLED"
+}
+
 export interface IZoomMeeting {
-  meetingId: string;
+  courseId: Types.ObjectId;
+
+  classTitle: string;
   topic: string;
-  status: string;
-  startTime: string;
+
+  meetingId: string;
+
+  status: liveMeetingStatus;
+
+  startTime: Date;
+
   duration: number;
+
   timezone: string;
-  password: string;
+
+  password?: string;
+
   joinUrl: string;
   startUrl: string;
+
   hostId: string;
   hostEmail: string;
-  createdAt: Date;
 }

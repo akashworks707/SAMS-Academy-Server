@@ -9,6 +9,11 @@ import { JwtPayload } from 'jsonwebtoken';
 
 const createUser = catchAsync(async (req: Request, res: Response) => {
     const payload = req.body;
+    const file = req.file;
+
+    if (file) {
+        payload.picture = file.path;
+    }
 
     const user = await UserServices.createUserService(payload)
     

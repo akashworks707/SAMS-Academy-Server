@@ -1,19 +1,39 @@
-import mongoose, { Schema, Document } from "mongoose";
-import { IZoomMeeting } from "./zoom.interface";
+
+import mongoose, { Schema } from "mongoose";
+import { IZoomMeeting, liveMeetingStatus } from "./zoom.interface";
 
 const ZoomMeetingSchema = new Schema<IZoomMeeting>(
   {
-    meetingId: { type: String, required: true, unique: true },
+    courseId: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      ref: "Course"
+    },
+
+    classTitle: { type: String, required: true },
     topic: { type: String, required: true },
-    status: { type: String, default: "waiting" },
-    startTime: { type: String },
+
+    meetingId: { type: String, required: true, unique: true },
+
+    status: {
+      type: String,
+      enum: Object.values(liveMeetingStatus),
+      default: liveMeetingStatus.SCHEDULED
+    },
+
+    startTime: { type: Date },
+
     duration: { type: Number, default: 60 },
+
     timezone: { type: String },
+
     password: { type: String },
-    joinUrl: { type: String },
-    startUrl: { type: String },
+
+    joinUrl: { type: String, required: true },
+    startUrl: { type: String, required: true },
+
     hostId: { type: String },
-    hostEmail: { type: String },
+    hostEmail: { type: String }
   },
   { timestamps: true }
 );

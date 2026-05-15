@@ -2,7 +2,6 @@ import express from "express";
 
 import {
     createMeetingController,
-    // deleteMeetingController,
     getMeetingsController,
     getSignatureController,
 } from "./zoom.controller";
@@ -20,6 +19,5 @@ router.get(
 );
 
 router.get("/meetings", getMeetingsController);
-// router.delete("/meetings/:meetingId", deleteMeetingController);
 
 export const ZoomRoutes = router;

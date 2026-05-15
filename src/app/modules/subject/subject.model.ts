@@ -15,6 +15,11 @@ const subjectSchema = new Schema<ISubject>(
       trim: true,
     },
 
+    code: {
+      type: String,
+      trim: true,
+    },
+
     isDeleted: {
       type: Boolean,
       default: false,

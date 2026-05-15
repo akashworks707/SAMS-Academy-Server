@@ -35,6 +35,25 @@ const userSchema = new Schema<IUser>({
 
 export const User = model("User", userSchema);
 
+const addressSchema = new Schema({
+    division: {
+        type: String, 
+        trim: true,
+    },
+    district: {
+        type: String, 
+        trim: true,
+    },
+    thana: {
+        type: String, 
+        trim: true,
+    },
+    union: {
+        type: String, 
+        trim: true,
+    }
+});
+
 const TeacherProfileSchema = new Schema<ITeacherProfile>(
   {
     userId: {
@@ -46,9 +65,12 @@ const TeacherProfileSchema = new Schema<ITeacherProfile>(
     },
 
     address: {
-      type: String,
+      type: addressSchema,
       required: true,
-      trim: true,
+    },
+
+    dateOfBirth: {
+      type: Date,
     },
 
     qualification: {
@@ -100,6 +122,69 @@ export const TeacherProfile = model<ITeacherProfile>(
   TeacherProfileSchema
 );
 
+// const StudentProfileSchema = new Schema<IStudentProfile>(
+//   {
+//     userId: {
+//       type: Schema.Types.ObjectId,
+//       ref: "User",
+//       required: true,
+//       unique: true,
+//       index: true,
+//     },
+
+//     address: {
+//       type: String,
+//       required: true,
+//       trim: true,
+//     },
+
+//     studentId: {
+//       type: String,
+//       required: true,
+//       unique: true,
+//     },
+
+//     section: {
+//       type: String,
+//     },
+
+//     roll: {
+//       type: Number,
+//     },
+
+//     guardianName: {
+//       type: String,
+//       required: true,
+//       trim: true,
+//     },
+
+//     guardianPhone: {
+//       type: String,
+//       required: true,
+//       trim: true,
+//     },
+
+//     enrolledCourses: [
+//       {
+//         type: Schema.Types.ObjectId,
+//         ref: "Course",
+//       },
+//     ]
+//   },
+//   {
+//     timestamps: true,
+//   }
+// );
+
+// export const StudentProfile = model<IStudentProfile>(
+//   "StudentProfile",
+//   StudentProfileSchema
+// );
+
+
+
+
+
 const StudentProfileSchema = new Schema<IStudentProfile>(
   {
     userId: {
@@ -110,10 +195,13 @@ const StudentProfileSchema = new Schema<IStudentProfile>(
       index: true,
     },
 
+    dateOfBirth: {
+      type: Date,
+    },
+
     address: {
-      type: String,
+      type: addressSchema,
       required: true,
-      trim: true,
     },
 
     studentId: {

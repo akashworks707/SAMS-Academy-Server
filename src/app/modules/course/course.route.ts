@@ -6,12 +6,15 @@ import {
   updateCourseZodSchema,
 } from "./course.validation";
 import { multerUpload } from "../../config/multer.config";
+import { checkAuth } from "../../middleware/checkAuth";
+import { Role } from "../user/user.interface";
 
 const router = express.Router();
 
 router.post(
   "/create-course",
-    multerUpload.single("thumbnail"),
+  checkAuth(Role.ADMIN),
+  multerUpload.single("thumbnail"),
   validateRequest(createCourseZodSchema),
   CourseController.createCourse
 );
@@ -33,6 +36,7 @@ router.get(
 
 router.patch(
   "/:id",
+  checkAuth(Role.ADMIN),
   multerUpload.single("thumbnail"),
   validateRequest(updateCourseZodSchema),
   CourseController.updateCourse
@@ -40,11 +44,13 @@ router.patch(
 
 router.delete(
   "/:id",
+  checkAuth(Role.ADMIN),
   CourseController.deleteCourse
 );
 
 router.patch(
   "/soft-delete/:id",
+  checkAuth(Role.ADMIN),
   CourseController.softDeleteCourse
 );
 

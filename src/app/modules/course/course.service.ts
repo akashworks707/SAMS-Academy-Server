@@ -1,6 +1,8 @@
 import AppError from "../../errorHelpers/appError";
 import { QueryBuilder } from "../../utils/QueryBuilder";
+import { CourseRecordedVideoModel } from "../courseRecordedVideo/courseRecordedVideo.model";
 import { TeacherProfile } from "../user/user.model";
+import { ZoomMeeting } from "../zoom/zoom.model";
 import { courseSearchableFields } from "./course.constants";
 import { ICourse } from "./course.interface";
 import { CourseModel } from "./course.model";
@@ -64,7 +66,10 @@ const getAllCourses = async (query: Record<string, string>) => {
         .populate({
             path: "assignSubWithTeacher.teacher",
             model: "TeacherProfile",
-        });
+        })
+    // .populate({
+    //     path: "recordedVideoClasses", // ✅ THIS IS THE MAIN PART
+    // });
 
     const meta = await queryBuilder.getMeta();
 
@@ -124,9 +129,20 @@ const getSingleCourse = async (slug: string) => {
                     },
                 },
             ],
-        });
+        })
 
-    return { data: result };
+
+    const courseRecordedVideos = await CourseRecordedVideoModel.find({ course: result?._id })
+    const liveClasses = await ZoomMeeting.find({ courseId: result?._id })
+
+    return {
+        data: {
+            result,
+            courseRecordedVideos,
+            liveClasses
+        }
+
+    };
 };
 
 const updateCourse = async (

@@ -4,11 +4,13 @@ import { Role } from "./user.interface";
 import { validateRequest } from "../../middleware/validateRequest";
 import { createUserZodSchema, updateUserZodSchema } from "./user.validation";
 import { checkAuth } from "../../middleware/checkAuth";
+import { multerUpload } from "../../config/multer.config";
 
 const router = express.Router();
 
 router.post(
     '/create-user',
+    multerUpload.single("picture"),
     validateRequest(createUserZodSchema),
     UserControllers.createUser
 )

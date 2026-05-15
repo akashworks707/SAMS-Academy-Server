@@ -16,13 +16,22 @@ export interface IUser {
     role: Role;
 }
 
+export interface IAddress {
+    division: string;
+    district: string;
+    thana: string;
+    union: string;
+}
+
 export interface ITeacherProfile {
     userId: Types.ObjectId;
 
-    address: string;
+    address: IAddress;
 
     qualification: string;
-
+    
+    dateOfBirth?: Date;
+    
     experience: number;
 
     designation?: string;
@@ -37,21 +46,43 @@ export interface ITeacherProfile {
 
 }
 
+// export interface IStudentProfile {
+//   userId: Types.ObjectId;
+
+//   studentId: string;
+
+//   address: string;
+
+//   section?: string;
+
+//   roll?: number;
+
+//   guardianName: string;
+
+//   guardianPhone: string;
+
+//   enrolledCourses?: Types.ObjectId[];
+
+// }
+
+
+
 export interface IStudentProfile {
-  userId: Types.ObjectId;
+    userId: Types.ObjectId;
 
-  studentId: string;
+    studentId: string;
+    dateOfBirth?: Date;
 
-  address: string;
+    address: IAddress;
 
-  section?: string;
+    section?: string;
 
-  roll?: number;
+    roll?: number;
 
-  guardianName: string;
+    guardianName: string;
 
-  guardianPhone: string;
+    guardianPhone: string;
 
-  enrolledCourses?: Types.ObjectId[];
+    enrolledCourses?: Types.ObjectId[];
 
 }

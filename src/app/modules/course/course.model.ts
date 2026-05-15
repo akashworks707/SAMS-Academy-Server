@@ -105,10 +105,6 @@ const courseSchema = new Schema<ICourse>(
             default: 0,
         },
 
-        liveClassLinks: [String],
-
-        recordedClassLinks: [String],
-
         certificate: {
             type: Boolean,
             default: false,
@@ -143,7 +139,7 @@ const courseSchema = new Schema<ICourse>(
         },
     },
     {
-        timestamps: true,
+        timestamps: true
     }
 );
 
