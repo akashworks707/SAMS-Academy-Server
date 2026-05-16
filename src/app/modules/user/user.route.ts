@@ -9,11 +9,35 @@ import { multerUpload } from "../../config/multer.config";
 const router = express.Router();
 
 router.post(
-    '/create-user',
-    multerUpload.single("picture"),
-    validateRequest(createUserZodSchema),
-    UserControllers.createUser
-)
+  "/create-user",
+  multerUpload.single("picture"),
+  (req, res, next) => {
+    try {
+      if (req.body.address) {
+        req.body.address = JSON.parse(req.body.address);
+      }
+
+      if (req.body.roll) {
+        req.body.roll = Number(req.body.roll);
+      }
+
+      if (req.body.salary) {
+        req.body.salary = Number(req.body.salary);
+      }
+
+      if (req.body.experience) {
+        req.body.experience = Number(req.body.experience);
+      }
+
+      next();
+    } catch (error) {
+      next(error);
+    }
+  },
+  validateRequest(createUserZodSchema),
+  UserControllers.createUser
+);
+
 router.get('/me', checkAuth(...Object.values(Role)), UserControllers.getMe)
 router.get("/all-users", checkAuth(Role.ADMIN), UserControllers.getAllUsers)
 router.get("/all-students", checkAuth(Role.ADMIN), UserControllers.getAllStudents)
