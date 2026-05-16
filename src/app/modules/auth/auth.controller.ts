@@ -27,6 +27,26 @@ const credentialLogin = catchAsync(async (req: Request, res: Response, next: Nex
 
 })
 
+const googleLogin = catchAsync(
+  async (req: Request, res: Response) => {
+    const { token } = req.body;
+
+    const result = await AuthServices.googleLogin(token);
+
+    setAuthCookie(res, {
+      accessToken: result.accessToken,
+      refreshToken: result.refreshToken,
+    });
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Google login successful",
+      data: result,
+    });
+  }
+);
+
 const getNewAccessToken = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   const refreshToken = req.cookies.refreshToken;
 
@@ -89,5 +109,6 @@ export const AuthControllers = {
   credentialLogin,
   getNewAccessToken,
   logout,
-  changePassword
+  changePassword,
+  googleLogin
 }

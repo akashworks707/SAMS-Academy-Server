@@ -1,57 +1,66 @@
 import { Schema, model, Types } from "mongoose";
-import { IStudentProfile, ITeacherProfile, IUser, Role } from "./user.interface";
+import {
+  IStudentProfile,
+  ITeacherProfile,
+  IUser,
+  Role,
+} from "./user.interface";
 
-const userSchema = new Schema<IUser>({
+const userSchema = new Schema<IUser>(
+  {
     name: {
-        type: String,
-        required: true,
-        trim: true,
+      type: String,
+      required: true,
+      trim: true,
     },
     email: {
-        type: String,
-        required: true,
-        unique: true,
-        lowercase: true,
-        trim: true,
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true,
     },
     password: {
-        type: String,
+      type: String,
+      default: null,
     },
     picture: {
-        type: String,
+      type: String,
     },
     role: {
-        type: String,
-        enum: Object.values(Role),
-        default: Role.STUDENT,
+      type: String,
+      enum: Object.values(Role),
+      default: Role.STUDENT,
     },
     phone: {
-        type: String,
-        required: true
-    }
-}, {
+      type: String,
+      default: "",
+    },
+  },
+  {
     timestamps: true,
-});
+  },
+);
 
 export const User = model("User", userSchema);
 
 const addressSchema = new Schema({
-    division: {
-        type: String, 
-        trim: true,
-    },
-    district: {
-        type: String, 
-        trim: true,
-    },
-    thana: {
-        type: String, 
-        trim: true,
-    },
-    union: {
-        type: String, 
-        trim: true,
-    }
+  division: {
+    type: String,
+    trim: true,
+  },
+  district: {
+    type: String,
+    trim: true,
+  },
+  thana: {
+    type: String,
+    trim: true,
+  },
+  union: {
+    type: String,
+    trim: true,
+  },
 });
 
 const TeacherProfileSchema = new Schema<ITeacherProfile>(
@@ -110,16 +119,16 @@ const TeacherProfileSchema = new Schema<ITeacherProfile>(
         type: Schema.Types.ObjectId,
         ref: "Course",
       },
-    ]
+    ],
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 export const TeacherProfile = model<ITeacherProfile>(
   "TeacherProfile",
-  TeacherProfileSchema
+  TeacherProfileSchema,
 );
 
 // const StudentProfileSchema = new Schema<IStudentProfile>(
@@ -181,10 +190,6 @@ export const TeacherProfile = model<ITeacherProfile>(
 //   StudentProfileSchema
 // );
 
-
-
-
-
 const StudentProfileSchema = new Schema<IStudentProfile>(
   {
     userId: {
@@ -235,14 +240,14 @@ const StudentProfileSchema = new Schema<IStudentProfile>(
         type: Schema.Types.ObjectId,
         ref: "Course",
       },
-    ]
+    ],
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 export const StudentProfile = model<IStudentProfile>(
   "StudentProfile",
-  StudentProfileSchema
+  StudentProfileSchema,
 );

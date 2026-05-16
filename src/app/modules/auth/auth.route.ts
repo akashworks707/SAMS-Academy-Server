@@ -9,6 +9,7 @@ const router = express.Router();
 router.post('/login', AuthControllers.credentialLogin)
 router.post('/logout', AuthControllers.logout)
 router.post("/refresh-token", AuthControllers.getNewAccessToken)
+router.post("/google-login", AuthControllers.googleLogin);
 router.post("/change-password", checkAuth(...Object.values(Role)), validateRequest(changePasswordZodSchema), AuthControllers.changePassword)
 
 export const authRoutes = router;
