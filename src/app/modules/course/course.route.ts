@@ -19,6 +19,8 @@ router.post(
   CourseController.createCourse
 );
 
+router.get("/my-courses", checkAuth(...Object.values(Role)), CourseController.getMyCourses)
+
 router.get(
   "/all-courses",
   CourseController.getAllCourses

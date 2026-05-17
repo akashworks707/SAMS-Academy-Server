@@ -1,7 +1,9 @@
 import AppError from "../../errorHelpers/appError";
 import { QueryBuilder } from "../../utils/QueryBuilder";
 import { CourseRecordedVideoModel } from "../courseRecordedVideo/courseRecordedVideo.model";
-import { TeacherProfile } from "../user/user.model";
+import { EnrollmentModel } from "../enrollment/enrollment.model";
+import { Role } from "../user/user.interface";
+import { TeacherProfile, User } from "../user/user.model";
 import { ZoomMeeting } from "../zoom/zoom.model";
 import { courseSearchableFields } from "./course.constants";
 import { ICourse } from "./course.interface";
@@ -67,9 +69,6 @@ const getAllCourses = async (query: Record<string, string>) => {
             path: "assignSubWithTeacher.teacher",
             model: "TeacherProfile",
         })
-    // .populate({
-    //     path: "recordedVideoClasses", // ✅ THIS IS THE MAIN PART
-    // });
 
     const meta = await queryBuilder.getMeta();
 
@@ -145,6 +144,32 @@ const getSingleCourse = async (slug: string) => {
     };
 };
 
+
+const getMyCourses = async (userId: string) => {
+
+    const loggedInUser = await User.findById(userId)
+
+    let result;
+
+    if (loggedInUser?.role === Role.STUDENT) {
+        result = await EnrollmentModel.find({ student: userId }).populate("course")
+    }
+
+    if (loggedInUser?.role === Role.TEACHER) {
+        const teacherProfile = await TeacherProfile.findOne({ userId });
+
+        if (!teacherProfile) {
+            return { data: [] };
+        }
+
+        result = await CourseModel.find({
+            "assignSubWithTeacher.teacher": teacherProfile._id
+        });
+    }
+
+    return { data: result }
+}
+
 const updateCourse = async (
     id: string,
     payload: Partial<ICourse>
@@ -192,4 +217,5 @@ export const CourseService = {
     updateCourse,
     softDeleteCourse,
     deleteCourse,
+    getMyCourses
 };

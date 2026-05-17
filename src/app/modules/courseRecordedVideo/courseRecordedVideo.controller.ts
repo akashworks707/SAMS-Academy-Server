@@ -1,14 +1,15 @@
 // recordedVideo.controller.ts
 
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status-codes";
 import { CourseRecordedVideoService } from "./courseRecordedVideo.service";
 import { create } from "axios";
 import { CourseRecordedVideoModel } from "./courseRecordedVideo.model";
 import AppError from "../../errorHelpers/appError";
 import { deleteImageFromCloudinary } from "../../config/cloudinary.config";
+import { catchAsync } from "../../utils/catchAsync";
 
-const createCourseRecordedVideo = async (req: Request, res: Response) => {
+const createCourseRecordedVideo = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const payload = req.body;
     const file = req.file;
     if (file) {
@@ -21,9 +22,9 @@ const createCourseRecordedVideo = async (req: Request, res: Response) => {
         message: "Recorded video created successfully",
         data: result.data,
     });
-};
+});
 
-const getAllRecordedVideos = async (req: Request, res: Response) => {
+const getAllRecordedVideos = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const result = await CourseRecordedVideoService.getAllRecordedVideos(
         req.query as Record<string, string>
     );
@@ -34,9 +35,9 @@ const getAllRecordedVideos = async (req: Request, res: Response) => {
         data: result.data,
         meta: result.meta,
     });
-};
+});
 
-const getAllTrashRecordedVideos = async (req: Request, res: Response) => {
+const getAllTrashRecordedVideos = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const result = await CourseRecordedVideoService.getAllTrashRecordedVideos(
         req.query as Record<string, string>
     );
@@ -47,9 +48,9 @@ const getAllTrashRecordedVideos = async (req: Request, res: Response) => {
         data: result.data,
         meta: result.meta,
     });
-};
+});
 
-const getSingleRecordedVideo = async (req: Request, res: Response) => {
+const getSingleRecordedVideo = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const result = await CourseRecordedVideoService.getSingleRecordedVideo(req.params.id as string);
 
     res.status(httpStatus.OK).json({
@@ -57,9 +58,9 @@ const getSingleRecordedVideo = async (req: Request, res: Response) => {
         message: "Recorded Video Retrieved Successfully",
         data: result.data,
     });
-};
+});
 
-const updateRecordedVideo = async (req: Request, res: Response) => {
+const updateRecordedVideo = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const payload = req.body;
     const file = req.file;
     const courseId = req.params.id as string;
@@ -86,9 +87,9 @@ const updateRecordedVideo = async (req: Request, res: Response) => {
         message: "Recorded Video Updated Successfully",
         data: result.data,
     });
-};
+});
 
-const softDeleteRecordedVideo = async (req: Request, res: Response) => {
+const softDeleteRecordedVideo = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const result = await CourseRecordedVideoService.softDeleteRecordedVideo(req.params.id as string);
 
     res.status(httpStatus.OK).json({
@@ -96,9 +97,9 @@ const softDeleteRecordedVideo = async (req: Request, res: Response) => {
         message: "Recorded Video Soft Deleted",
         data: result.data,
     });
-};
+});
 
-const deleteRecordedVideo = async (req: Request, res: Response) => {
+const deleteRecordedVideo = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const result = await CourseRecordedVideoService.deleteRecordedVideo(req.params.id as string);
 
     res.status(httpStatus.OK).json({
@@ -106,7 +107,7 @@ const deleteRecordedVideo = async (req: Request, res: Response) => {
         message: "Recorded Video Hard Deleted",
         data: result.data,
     });
-};
+});
 
 export const CourseRecordedVideoController = {
     createCourseRecordedVideo,

@@ -1,8 +1,9 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status-codes";
 import { EnrollmentService } from "./enrollment.service";
+import { catchAsync } from "../../utils/catchAsync";
 
-const createEnrollment = async (req: Request, res: Response) => {
+const createEnrollment = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const result = await EnrollmentService.createEnrollment(req.body);
 
     res.status(httpStatus.CREATED).json({
@@ -10,9 +11,9 @@ const createEnrollment = async (req: Request, res: Response) => {
         message: "Enrollment created successfully",
         data: result.data,
     });
-};
+});
 
-const getAllEnrollments = async (req: Request, res: Response) => {
+const getAllEnrollments = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const query = req.query;
     const result = await EnrollmentService.getAllEnrollments(query as Record<string, string>);
 
@@ -22,9 +23,9 @@ const getAllEnrollments = async (req: Request, res: Response) => {
         data: result.data,
         meta: result.meta
     });
-};
+});
 
-const getAllTrashEnrollments = async (req: Request, res: Response) => {
+const getAllTrashEnrollments = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const query = req.query;
     const result = await EnrollmentService.getAllTrashEnrollments(query as Record<string, string>);
 
@@ -34,9 +35,9 @@ const getAllTrashEnrollments = async (req: Request, res: Response) => {
         data: result.data,
         meta: result.meta
     });
-};
+});
 
-const getSingleEnrollment = async (req: Request, res: Response) => {
+const getSingleEnrollment = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const courseId = req.params.id as string;
     const result = await EnrollmentService.getSingleEnrollment(
         courseId
@@ -47,9 +48,9 @@ const getSingleEnrollment = async (req: Request, res: Response) => {
         message: "Enrollment retrieved successfully",
         data: result.data,
     });
-};
+});
 
-const updateEnrollment = async (req: Request, res: Response) => {
+const updateEnrollment = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const courseId = req.params.id as string;
     const result = await EnrollmentService.updateEnrollment(
         courseId,
@@ -61,9 +62,9 @@ const updateEnrollment = async (req: Request, res: Response) => {
         message: "Enrollment updated successfully",
         data: result.data,
     });
-};
+});
 
-const softDeleteEnrollment = async (req: Request, res: Response) => {
+const softDeleteEnrollment = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const courseId = req.params.id as string;
     const result = await EnrollmentService.softDeleteEnrollment(
         courseId
@@ -74,9 +75,9 @@ const softDeleteEnrollment = async (req: Request, res: Response) => {
         message: "Enrollment soft deleted",
         data: result.data,
     });
-};
+});
 
-const deleteEnrollment = async (req: Request, res: Response) => {
+const deleteEnrollment = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const courseId = req.params.id as string;
     const result = await EnrollmentService.deleteEnrollment(
         courseId
@@ -87,7 +88,7 @@ const deleteEnrollment = async (req: Request, res: Response) => {
         message: "Enrollment deleted",
         data: result.data,
     });
-};
+});
 
 export const EnrollmentController = {
     createEnrollment,

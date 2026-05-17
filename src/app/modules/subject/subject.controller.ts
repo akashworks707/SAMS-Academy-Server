@@ -1,10 +1,12 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status-codes";
 import { SubjectService } from "./subject.service";
+import { catchAsync } from "../../utils/catchAsync";
 
-const createSubject = async (
+const createSubject = catchAsync(async (
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   const result = await SubjectService.createSubject(
     req.body
@@ -15,11 +17,12 @@ const createSubject = async (
     message: "Subject created successfully",
     data: result.data,
   });
-};
+});
 
-const getAllSubjects = async (
+const getAllSubjects = catchAsync(async (
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   const query = req.query;
   const result =
@@ -31,11 +34,12 @@ const getAllSubjects = async (
     data: result.data,
     meta: result.meta
   });
-};
+});
 
-const getAllTrashSubjects = async (
+const getAllTrashSubjects = catchAsync(async (
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   const query = req.query;
   const result =
@@ -48,11 +52,12 @@ const getAllTrashSubjects = async (
     data: result.data,
     meta: result.meta
   });
-};
+});
 
-const getSingleSubject = async (
+const getSingleSubject = catchAsync(async (
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   const result =
     await SubjectService.getSingleSubject(
@@ -64,11 +69,12 @@ const getSingleSubject = async (
     message: "Subject Retrieved Successfully",
     data: result.data,
   });
-};
+});
 
-const updateSubject = async (
+const updateSubject = catchAsync(async (
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   const result =
     await SubjectService.updateSubject(
@@ -81,11 +87,12 @@ const updateSubject = async (
     message: "Subject Updated Successfully",
     data: result.data,
   });
-};
+});
 
-const softDeleteSubject = async (
+const softDeleteSubject = catchAsync(async (
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   const result =
     await SubjectService.softDeleteSubject(
@@ -97,11 +104,12 @@ const softDeleteSubject = async (
     message: "Subject deleted (soft delete)",
     data: result.data,
   });
-};
+});
 
-const deleteSubject = async (
+const deleteSubject = catchAsync(async (
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   const result =
     await SubjectService.deleteSubject(
@@ -113,7 +121,7 @@ const deleteSubject = async (
     message: "Subject deleted (hard delete)",
     data: result.data,
   });
-};
+});
 
 export const SubjectController = {
   createSubject,

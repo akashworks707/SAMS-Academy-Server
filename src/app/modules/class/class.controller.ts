@@ -1,8 +1,9 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status-codes";
 import { ClassService } from "./class.service";
+import { catchAsync } from "../../utils/catchAsync";
 
-const createClass = async (req: Request, res: Response) => {
+const createClass = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const result = await ClassService.createClass(req.body);
 
     res.status(httpStatus.CREATED).json({
@@ -10,9 +11,9 @@ const createClass = async (req: Request, res: Response) => {
         message: "Class created successfully",
         data: result.data,
     });
-};
+});
 
-const getAllClasses = async (req: Request, res: Response) => {
+const getAllClasses = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const query = req.query;
     const result = await ClassService.getAllClasses(query as Record<string, string>);
 
@@ -22,9 +23,9 @@ const getAllClasses = async (req: Request, res: Response) => {
         data: result.data,
         meta: result.meta
     });
-};
+});
 
-const getAllTrashClasses = async (req: Request, res: Response) => {
+const getAllTrashClasses = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const query = req.query;
     const result = await ClassService.getAllTrashClasses(query as Record<string, string>);
 
@@ -34,9 +35,9 @@ const getAllTrashClasses = async (req: Request, res: Response) => {
         data: result.data,
         meta: result.meta
     });
-};
+});
 
-const getSingleClass = async (req: Request, res: Response) => {
+const getSingleClass = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const result = await ClassService.getSingleClass(req.params.id as string);
 
     res.status(httpStatus.OK).json({
@@ -44,9 +45,9 @@ const getSingleClass = async (req: Request, res: Response) => {
         message: "Class Retrieved Successfully",
         data: result.data,
     });
-};
+});
 
-const updateClass = async (req: Request, res: Response) => {
+const updateClass = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const result = await ClassService.updateClass(req.params.id as string, req.body);
 
     res.status(httpStatus.OK).json({
@@ -54,9 +55,9 @@ const updateClass = async (req: Request, res: Response) => {
         message: "Class Updated Successfully",
         data: result.data,
     });
-};
+});
 
-const softDeleteClass = async (req: Request, res: Response) => {
+const softDeleteClass = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const result = await ClassService.softDeleteClass(req.params.id as string);
 
     res.status(httpStatus.OK).json({
@@ -64,9 +65,9 @@ const softDeleteClass = async (req: Request, res: Response) => {
         message: "Class deleted (soft delete)",
         data: result.data,
     });
-};
+});
 
-const deleteClass = async (req: Request, res: Response) => {
+const deleteClass = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const result = await ClassService.deleteClass(req.params.id as string);
 
     res.status(httpStatus.OK).json({
@@ -74,7 +75,7 @@ const deleteClass = async (req: Request, res: Response) => {
         message: "Class deleted (hard delete)",
         data: result.data,
     });
-};
+});
 
 export const ClassController = {
     createClass,
