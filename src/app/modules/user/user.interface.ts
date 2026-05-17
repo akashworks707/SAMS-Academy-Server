@@ -26,17 +26,17 @@ export interface IAddress {
 export interface ITeacherProfile {
     userId: Types.ObjectId;
 
-    address: IAddress;
+    address?: IAddress;
 
     qualification: string;
     
     dateOfBirth?: Date;
     
-    experience: number;
+    experience?: number;
 
     designation?: string;
 
-    salary: number;
+    salary?: number;
 
     bio?: string;
 

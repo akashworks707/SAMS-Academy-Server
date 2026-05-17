@@ -75,11 +75,12 @@ const TeacherProfileSchema = new Schema<ITeacherProfile>(
 
     address: {
       type: addressSchema,
-      required: true,
+      required: false,
     },
 
     dateOfBirth: {
       type: Date,
+      required: false
     },
 
     qualification: {
@@ -91,20 +92,24 @@ const TeacherProfileSchema = new Schema<ITeacherProfile>(
     experience: {
       type: Number,
       default: 0,
+      required: false
     },
 
     designation: {
       type: String,
       default: "Teacher",
+      required: false
     },
 
     salary: {
       type: Number,
       default: 0,
+      required: false
     },
 
     bio: {
       type: String,
+      required: false
     },
 
     assignedSubjects: [
