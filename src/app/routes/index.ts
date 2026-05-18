@@ -7,6 +7,7 @@ import { subjectRoutes } from "../modules/subject/subject.route";
 import { courseRoutes } from "../modules/course/course.route";
 import { EnrollmentRoutes } from "../modules/enrollment/enrollment.route";
 import { recordedVideoRoutes } from "../modules/courseRecordedVideo/courseRecordedVideo.route";
+import { paymentRoutes } from "../modules/payment/payment.route";
 
 export const router = Router();
 
@@ -42,6 +43,10 @@ const moduleRoutes = [
     {
      path: "/recorded-video",
      route: recordedVideoRoutes
+    },
+    {
+        path: "/payment",
+        route: paymentRoutes
     }
 ]
 

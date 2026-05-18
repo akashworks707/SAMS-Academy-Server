@@ -61,7 +61,12 @@ const addressSchema = new Schema({
     type: String,
     trim: true,
   },
-});
+},
+{
+  _id: false,
+  timestamps: false
+}
+);
 
 const TeacherProfileSchema = new Schema<ITeacherProfile>(
   {
@@ -136,65 +141,6 @@ export const TeacherProfile = model<ITeacherProfile>(
   TeacherProfileSchema,
 );
 
-// const StudentProfileSchema = new Schema<IStudentProfile>(
-//   {
-//     userId: {
-//       type: Schema.Types.ObjectId,
-//       ref: "User",
-//       required: true,
-//       unique: true,
-//       index: true,
-//     },
-
-//     address: {
-//       type: String,
-//       required: true,
-//       trim: true,
-//     },
-
-//     studentId: {
-//       type: String,
-//       required: true,
-//       unique: true,
-//     },
-
-//     section: {
-//       type: String,
-//     },
-
-//     roll: {
-//       type: Number,
-//     },
-
-//     guardianName: {
-//       type: String,
-//       required: true,
-//       trim: true,
-//     },
-
-//     guardianPhone: {
-//       type: String,
-//       required: true,
-//       trim: true,
-//     },
-
-//     enrolledCourses: [
-//       {
-//         type: Schema.Types.ObjectId,
-//         ref: "Course",
-//       },
-//     ]
-//   },
-//   {
-//     timestamps: true,
-//   }
-// );
-
-// export const StudentProfile = model<IStudentProfile>(
-//   "StudentProfile",
-//   StudentProfileSchema
-// );
-
 const StudentProfileSchema = new Schema<IStudentProfile>(
   {
     userId: {
@@ -240,12 +186,12 @@ const StudentProfileSchema = new Schema<IStudentProfile>(
       trim: true,
     },
 
-    enrolledCourses: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Course",
-      },
-    ],
+    // enrolledCourses: [
+    //   {
+    //     type: Schema.Types.ObjectId,
+    //     ref: "Course",
+    //   },
+    // ],
   },
   {
     timestamps: true,

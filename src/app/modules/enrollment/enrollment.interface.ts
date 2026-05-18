@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 
 export enum EnrollmentStatus {
-    ACTIVE = "ACTIVE",
+    FAILED = "FAILED",
     COMPLETED = "COMPLETED",
     PENDING = "PENDING",
     CANCELLED = "CANCELLED",

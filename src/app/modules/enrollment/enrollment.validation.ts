@@ -5,7 +5,7 @@ export const createEnrollmentZodSchema = z.object({
     course: z.string(),
     transactionId: z.string().optional(),
     status: z
-        .enum(["ACTIVE", "COMPLETED", "PENDING", "CANCELLED"])
+        .enum(["FAILED", "COMPLETED", "PENDING", "CANCELLED"])
         .optional(),
     referredBy: z.string().optional(),
     progress: z.number().min(0).max(100).optional(),
