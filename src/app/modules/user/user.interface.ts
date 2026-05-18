@@ -82,7 +82,5 @@ export interface IStudentProfile {
     guardianName: string;
 
     guardianPhone: string;
-
     enrolledCourses?: Types.ObjectId[];
-
 }

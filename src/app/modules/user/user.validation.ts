@@ -61,7 +61,7 @@ export const createUserZodSchema = z.object({
   roll: z.number().optional(),
   guardianName: z.string().optional(),
   guardianPhone: z.string().optional(),
-  enrolledCourses: z.array(z.string()).optional(),
+  // enrolledCourses: z.array(z.string()).optional(),
 });
 
 

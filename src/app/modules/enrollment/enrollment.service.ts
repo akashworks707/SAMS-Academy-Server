@@ -1,26 +1,106 @@
 import AppError from "../../errorHelpers/appError";
 import { QueryBuilder } from "../../utils/QueryBuilder";
-import { StudentProfile } from "../user/user.model";
+import { CourseModel } from "../course/course.model";
+import httpStatus from "http-status-codes";
+import { PaymentModel } from "../payment/payment.model";
 import { enrollmentSearchableFields } from "./enrollment.constant";
+import { EnrollmentStatus } from "./enrollment.interface";
 import { EnrollmentModel } from "./enrollment.model";
+import { PaymentService } from "../payment/payment.service";
+import mongoose from "mongoose";
 
 const createEnrollment = async (payload: any) => {
-    const existing = await EnrollmentModel.findOne({
-        student: payload.student,
-        course: payload.course,
-    });
+    const session = await mongoose.startSession();
 
-    if (existing) {
-        throw new AppError(400, "Student already enrolled in this course");
+    try {
+        session.startTransaction();
+
+        const existing = await EnrollmentModel.findOne({
+            student: payload.student,
+            course: payload.course,
+        }).session(session);
+
+        if (existing) {
+            throw new AppError(
+                httpStatus.BAD_REQUEST,
+                "Student already enrolled"
+            );
+        }
+
+        const course = await CourseModel.findById(
+            payload.course
+        ).session(session);
+
+        if (!course) {
+            throw new AppError(
+                httpStatus.NOT_FOUND,
+                "Course not found"
+            );
+        }
+
+        const amount =
+            course.discountPrice || course.regularPrice;
+
+        if (!amount) {
+            throw new AppError(
+                httpStatus.BAD_REQUEST,
+                "Course price not found"
+            );
+        }
+
+        // generate transaction id
+        const transactionId = `TXN-${Date.now()}`;
+
+        // create enrollment
+        const enrollment = await EnrollmentModel.create(
+            [
+                {
+                    student: payload.student,
+                    course: payload.course,
+                    transactionId,
+                    status: EnrollmentStatus.PENDING,
+                    createdBy: payload.student,
+                },
+            ],
+            { session }
+        );
+
+        // create payment
+        await PaymentModel.create(
+            [
+                {
+                    enrollment: enrollment[0]._id,
+                    transactionId,
+                    amount,
+                },
+            ],
+            { session }
+        );
+
+        await session.commitTransaction();
+        session.endSession();
+
+        // payment init after successful db transaction
+        const paymentInitRes =
+            await PaymentService.initPayment(
+                enrollment[0]._id
+            );
+
+
+        return {
+            data: {
+                enrollment: enrollment[0],
+                paymentUrl: paymentInitRes.paymentUrl,
+            },
+        };
+
+    } catch (error) {
+        // rollback
+        await session.abortTransaction();
+        session.endSession();
+
+        throw error;
     }
-
-    const result = await EnrollmentModel.create(payload);
-
-    await StudentProfile.findByIdAndUpdate(payload.student, {
-        $push: { enrolledCourses: payload.course }
-    });
-
-    return { data: result };
 };
 
 const getAllEnrollments = async (query: Record<string, string>) => {
