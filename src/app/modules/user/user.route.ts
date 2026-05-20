@@ -40,7 +40,7 @@ router.post(
 
 router.get('/me', checkAuth(...Object.values(Role)), UserControllers.getMe)
 router.get("/all-users", checkAuth(Role.ADMIN), UserControllers.getAllUsers)
-router.get("/all-students", checkAuth(Role.ADMIN), UserControllers.getAllStudents)
+router.get("/all-students", checkAuth(...Object.values(Role)), UserControllers.getAllStudents)
 router.get("/all-teachers", checkAuth(Role.ADMIN), UserControllers.getAllTeachers)
 router.get("/:id", checkAuth(...Object.values(Role)), UserControllers.getSingleUser)
 router.delete("/:id", checkAuth(Role.ADMIN), UserControllers.deleteUser)

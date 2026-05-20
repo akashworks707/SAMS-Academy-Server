@@ -27,9 +27,7 @@ const createEnrollment = async (payload: any) => {
             );
         }
 
-        const course = await CourseModel.findById(
-            payload.course
-        ).session(session);
+       const course = await CourseModel.findById(payload.course).session(session);
 
         if (!course) {
             throw new AppError(

@@ -3,10 +3,16 @@ import axios from "axios";
 import { getZoomAccessToken } from "../../utils/zoomUtils";
 import { ZoomMeeting } from "./zoom.model";
 import { liveMeetingStatus } from "./zoom.interface";
+import { CourseModel } from "../course/course.model";
 
 export const createZoomMeeting = async (payload: any) => {
   try {
     const token = await getZoomAccessToken();
+    const course = await CourseModel.findById(payload.courseId);
+
+if (!course) {
+  throw new Error("Course not found");
+}
 
     const response = await axios.post(
       "https://api.zoom.us/v2/users/me/meetings",
@@ -28,7 +34,7 @@ export const createZoomMeeting = async (payload: any) => {
 
     return await ZoomMeeting.create({
       courseId: payload.courseId,
-      classTitle: payload.classTitle,
+      classTitle: course.title,
       topic: meeting.topic,
       meetingId: String(meeting.id),
       status: liveMeetingStatus.SCHEDULED,
