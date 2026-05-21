@@ -12,6 +12,8 @@ export enum liveMeetingStatus {
 export interface IZoomMeeting {
   courseId: Types.ObjectId;
 
+  subjectId: Types.ObjectId;
+
   classTitle: string;
   topic: string;
 

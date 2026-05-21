@@ -1,2 +1,2 @@
-export const recordedVideoSearchableFields = ["title", "course"];
+export const recordedVideoSearchableFields = ["title", "course", "subject"];
 

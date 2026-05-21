@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status-codes";
 import { SubjectService } from "./subject.service";
 import { catchAsync } from "../../utils/catchAsync";
+import { sendResponse } from "../../utils/sendResponse";
 
 const createSubject = catchAsync(async (
   req: Request,
@@ -12,8 +13,14 @@ const createSubject = catchAsync(async (
     req.body
   );
 
-  res.status(httpStatus.CREATED).json({
+  // res.status(httpStatus.CREATED).json({
+  //   success: true,
+  //   message: "Subject created successfully",
+  //   data: result.data,
+  // });
+  sendResponse(res, {
     success: true,
+    statusCode: httpStatus.CREATED,
     message: "Subject created successfully",
     data: result.data,
   });
@@ -28,11 +35,12 @@ const getAllSubjects = catchAsync(async (
   const result =
     await SubjectService.getAllSubjects(query as Record<string, string>);
 
-  res.status(httpStatus.OK).json({
+  sendResponse(res, {
     success: true,
+    statusCode: httpStatus.OK,
     message: "All Subjects Retrieved Successfully",
     data: result.data,
-    meta: result.meta
+    meta: result.meta,
   });
 });
 
@@ -45,12 +53,13 @@ const getAllTrashSubjects = catchAsync(async (
   const result =
     await SubjectService.getAllTrashSubjects(query as Record<string, string>);
 
-  res.status(httpStatus.OK).json({
+  sendResponse(res, {
     success: true,
+    statusCode: httpStatus.OK,
     message:
       "All Trash Subjects Retrieved Successfully",
     data: result.data,
-    meta: result.meta
+    meta: result.meta,
   });
 });
 
@@ -64,8 +73,9 @@ const getSingleSubject = catchAsync(async (
       req.params.id as string
     );
 
-  res.status(httpStatus.OK).json({
+  sendResponse(res, {
     success: true,
+    statusCode: httpStatus.OK,
     message: "Subject Retrieved Successfully",
     data: result.data,
   });
@@ -82,8 +92,9 @@ const updateSubject = catchAsync(async (
       req.body
     );
 
-  res.status(httpStatus.OK).json({
+  sendResponse(res, {
     success: true,
+    statusCode: httpStatus.OK,
     message: "Subject Updated Successfully",
     data: result.data,
   });
@@ -99,8 +110,10 @@ const softDeleteSubject = catchAsync(async (
       req.params.id as string
     );
 
-  res.status(httpStatus.OK).json({
+
+  sendResponse(res, {
     success: true,
+    statusCode: httpStatus.OK,
     message: "Subject deleted (soft delete)",
     data: result.data,
   });
@@ -116,8 +129,9 @@ const deleteSubject = catchAsync(async (
       req.params.id as string
     );
 
-  res.status(httpStatus.OK).json({
+  sendResponse(res, {
     success: true,
+    statusCode: httpStatus.OK,
     message: "Subject deleted (hard delete)",
     data: result.data,
   });

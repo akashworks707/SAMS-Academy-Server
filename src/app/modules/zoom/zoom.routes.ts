@@ -1,23 +1,20 @@
 import express from "express";
 
-import {
-    createMeetingController,
-    getMeetingsController,
-    getSignatureController,
-} from "./zoom.controller";
+import { ZoomMeetingController } from "./zoom.controller";
 
 const router = express.Router();
 
 router.post(
     "/create-meeting",
-    createMeetingController
+    ZoomMeetingController.createMeetingController
 );
 
 router.get(
     "/signature",
-    getSignatureController
+    ZoomMeetingController.getSignatureController
 );
 
-router.get("/meetings", getMeetingsController);
+router.get("/meetings",
+    ZoomMeetingController.getMeetingsController);
 
 export const ZoomRoutes = router;

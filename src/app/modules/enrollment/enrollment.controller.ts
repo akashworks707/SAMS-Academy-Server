@@ -2,14 +2,16 @@ import { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status-codes";
 import { EnrollmentService } from "./enrollment.service";
 import { catchAsync } from "../../utils/catchAsync";
+import { sendResponse } from "../../utils/sendResponse";
 
 const createEnrollment = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const result = await EnrollmentService.createEnrollment(req.body);
 
-    res.status(httpStatus.CREATED).json({
-        success: true,
-        message: "Enrollment created successfully",
-        data: result.data,
+     sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.CREATED,
+      message: "Enrollment created successfully",
+      data: result.data,
     });
 });
 
@@ -17,11 +19,12 @@ const getAllEnrollments = catchAsync(async (req: Request, res: Response, next: N
     const query = req.query;
     const result = await EnrollmentService.getAllEnrollments(query as Record<string, string>);
 
-    res.status(httpStatus.OK).json({
-        success: true,
-        message: "All enrollments retrieved successfully",
-        data: result.data,
-        meta: result.meta
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "All enrollments retrieved successfully",
+      data: result.data,
+      meta: result.meta,
     });
 });
 
@@ -29,11 +32,12 @@ const getAllTrashEnrollments = catchAsync(async (req: Request, res: Response, ne
     const query = req.query;
     const result = await EnrollmentService.getAllTrashEnrollments(query as Record<string, string>);
 
-    res.status(httpStatus.OK).json({
-        success: true,
-        message: "All trash enrollments retrieved successfully",
-        data: result.data,
-        meta: result.meta
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "All trash enrollments retrieved successfully",
+      data: result.data,
+      meta: result.meta,
     });
 });
 
@@ -43,10 +47,11 @@ const getSingleEnrollment = catchAsync(async (req: Request, res: Response, next:
         courseId
     );
 
-    res.status(httpStatus.OK).json({
-        success: true,
-        message: "Enrollment retrieved successfully",
-        data: result.data,
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Enrollment retrieved successfully",
+      data: result.data,
     });
 });
 
@@ -57,10 +62,11 @@ const updateEnrollment = catchAsync(async (req: Request, res: Response, next: Ne
         req.body
     );
 
-    res.status(httpStatus.OK).json({
-        success: true,
-        message: "Enrollment updated successfully",
-        data: result.data,
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Enrollment updated successfully",
+      data: result.data,
     });
 });
 
@@ -70,10 +76,11 @@ const softDeleteEnrollment = catchAsync(async (req: Request, res: Response, next
         courseId
     );
 
-    res.status(httpStatus.OK).json({
-        success: true,
-        message: "Enrollment soft deleted",
-        data: result.data,
+     sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Enrollment soft deleted",
+      data: result.data,
     });
 });
 
@@ -83,10 +90,11 @@ const deleteEnrollment = catchAsync(async (req: Request, res: Response, next: Ne
         courseId
     );
 
-    res.status(httpStatus.OK).json({
-        success: true,
-        message: "Enrollment deleted",
-        data: result.data,
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Enrollment deleted",
+      data: result.data,
     });
 });
 

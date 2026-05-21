@@ -1,18 +1,28 @@
 
 import axios from "axios";
-import { getZoomAccessToken } from "../../utils/zoomUtils";
+import { generateSignature, getZoomAccessToken } from "../../utils/zoomUtils";
 import { ZoomMeeting } from "./zoom.model";
 import { liveMeetingStatus } from "./zoom.interface";
 import { CourseModel } from "../course/course.model";
+import { QueryBuilder } from "../../utils/QueryBuilder";
+import { zoomMeetingSearchableFields } from "./zoom.constants";
+import { SubjectModel } from "../subject/subject.model";
+import AppError from "../../errorHelpers/appError";
+import httpStatus from "http-status-codes"
 
 export const createZoomMeeting = async (payload: any) => {
   try {
     const token = await getZoomAccessToken();
     const course = await CourseModel.findById(payload.courseId);
+    const subject = await SubjectModel.findById(payload.subjectId);
 
-if (!course) {
-  throw new Error("Course not found");
-}
+    if (!course) {
+      throw new AppError(httpStatus.NOT_FOUND, "Course not found");
+    }
+
+    if (!subject) {
+      throw new AppError(httpStatus.NOT_FOUND, "Subject not found");
+    }
 
     const response = await axios.post(
       "https://api.zoom.us/v2/users/me/meetings",
@@ -32,8 +42,9 @@ if (!course) {
 
     const meeting = response.data;
 
-    return await ZoomMeeting.create({
+    const result = await ZoomMeeting.create({
       courseId: payload.courseId,
+      subjectId: payload.subjectId,
       classTitle: course.title,
       topic: meeting.topic,
       meetingId: String(meeting.id),
@@ -48,8 +59,53 @@ if (!course) {
       hostEmail: meeting.host_email,
     });
 
+    return {
+      data: result
+    }
+
   } catch (err) {
     console.log("❌ Zoom Service Error:", err);
     throw err;
   }
 };
+
+const getSignatureService = async (meetingNumber: string, role: string) => {
+  const signature = generateSignature(
+    meetingNumber as string,
+    Number(role)
+  );
+
+  return {
+    signature
+  };
+}
+
+const getMeetingsService = async (query: Record<string, string>) => {
+  const baseQuery = ZoomMeeting.find().sort({ createdAt: -1 });
+
+  const queryBuilder = new QueryBuilder(baseQuery, query);
+
+  const meetingData = queryBuilder
+    .filter()
+    .search(zoomMeetingSearchableFields)
+    .sort()
+    .fields()
+    .paginate();
+
+  const [data, meta] = await Promise.all([
+    meetingData.build(),
+    queryBuilder.getMeta(),
+  ]);
+
+  return {
+    data,
+    meta,
+  };
+};
+
+
+export const ZoomMeetingService = {
+  getSignatureService,
+  createZoomMeeting,
+  getMeetingsService
+}

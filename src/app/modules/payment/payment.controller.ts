@@ -3,6 +3,8 @@ import { Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
 import { PaymentService } from "./payment.service";
 import { envVars } from "../../config/env";
+import { sendResponse } from "../../utils/sendResponse";
+import httpStatus from "http-status-codes"
 
 const initPayment = catchAsync(
     async (req: Request, res: Response) => {
@@ -12,10 +14,10 @@ const initPayment = catchAsync(
                 req.params.enrollmentId as string
             );
 
-        res.status(200).json({
+        sendResponse(res, {
             success: true,
-            message:
-                "Payment initialized successfully",
+            statusCode: httpStatus.OK,
+            message: "Payment initialized successfully",
             data: result,
         });
     }
