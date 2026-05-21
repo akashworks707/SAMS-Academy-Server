@@ -10,6 +10,12 @@ const ZoomMeetingSchema = new Schema<IZoomMeeting>(
       ref: "Course"
     },
 
+    subjectId: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      ref: "Subject"
+    },
+
     classTitle: { type: String, required: true },
     topic: { type: String, required: true },
 

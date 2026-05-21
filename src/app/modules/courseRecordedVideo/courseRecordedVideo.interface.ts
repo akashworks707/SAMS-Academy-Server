@@ -8,6 +8,7 @@ export enum RecordedVideoStatus {
 
 export interface ICourseRecordedVideo {
     course: Types.ObjectId; 
+    subject: Types.ObjectId;
     title: string;
     description?: string;
     videoUrl: string;

@@ -8,6 +8,11 @@ const courseRecordedVideoSchema = new Schema<ICourseRecordedVideo>(
       ref: "Course",
       required: true
     },
+    subject: {
+      type: Schema.Types.ObjectId,
+      ref: "Subject",
+      required: true
+    },
     title: {
       type: String,
       required: true,
