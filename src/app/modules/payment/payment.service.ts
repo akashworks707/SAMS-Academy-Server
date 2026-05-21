@@ -18,7 +18,7 @@ const initPayment = async (
         .findOne({ enrollment: enrollmentId });
 
     if (!payment) {
-        throw new Error("Payment not found");
+        throw new AppError( httpStatus.NOT_FOUND,"Payment not found");
     }
 
     const enrollment = await EnrollmentModel
