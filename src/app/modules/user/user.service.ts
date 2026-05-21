@@ -38,7 +38,7 @@ const createUserService = async (
     const isExist = await User.findOne({ email });
 
     if (isExist) {
-        throw new Error("User already exists");
+        throw new AppError(httpStatus.CONFLICT, "User already exists");
     }
 
     const hashedPassword = password
