@@ -2,7 +2,7 @@
 import axios from "axios";
 import { generateSignature, getZoomAccessToken } from "../../utils/zoomUtils";
 import { ZoomMeeting } from "./zoom.model";
-import { liveMeetingStatus } from "./zoom.interface";
+import { IZoomMeeting, liveMeetingStatus } from "./zoom.interface";
 import { CourseModel } from "../course/course.model";
 import { QueryBuilder } from "../../utils/QueryBuilder";
 import { zoomMeetingSearchableFields } from "./zoom.constants";
@@ -69,6 +69,42 @@ export const createZoomMeeting = async (payload: any) => {
   }
 };
 
+const updateZoomMeetingService = async (meetingId: string, payload: Partial<IZoomMeeting>) => {
+
+  const meeting = await ZoomMeeting.findById(meetingId)
+  if (!meeting) {
+    throw new AppError(httpStatus.NOT_FOUND, "Meeting not found")
+  }
+
+  let updatePayload: Partial<IZoomMeeting> = {}
+
+  if (payload.status) {
+    updatePayload.status = payload.status
+  }
+  if (payload.classTitle) {
+    updatePayload.classTitle = payload.classTitle
+  }
+  if (payload.courseId) {
+    updatePayload.courseId = payload.courseId
+  }
+  if (payload.subjectId) {
+    updatePayload.subjectId = payload.subjectId
+  }
+  if (payload.duration) {
+    updatePayload.duration = payload.duration
+  }
+
+  const updatedMeeting = await ZoomMeeting.findByIdAndUpdate(meetingId,
+    { $set: updatePayload },
+    {
+      returnDocument: "after",
+      runValidators: true,
+    })
+
+  return updatedMeeting;
+
+}
+
 const getSignatureService = async (meetingNumber: string, role: string) => {
   const signature = generateSignature(
     meetingNumber as string,
@@ -107,5 +143,6 @@ const getMeetingsService = async (query: Record<string, string>) => {
 export const ZoomMeetingService = {
   getSignatureService,
   createZoomMeeting,
-  getMeetingsService
+  getMeetingsService,
+  updateZoomMeetingService
 }

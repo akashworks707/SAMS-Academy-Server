@@ -1,5 +1,6 @@
 import { Types } from "mongoose";
 import { PaymentModel } from "../payment/payment.model";
+import { ZoomMeeting } from "../zoom/zoom.model";
 
 const buildDateMatch = (startDate?: string, endDate?: string) => {
   const match: any = {};
@@ -89,7 +90,6 @@ const getTotalRevenue = async (startDate?: string, endDate?: string) => {
   return result[0] || { totalRevenue: 0, totalTransactions: 0 };
 };
 
-
 const getTeacherRevenue = async (
   teacherId?: string,
   startDate?: string,
@@ -97,7 +97,8 @@ const getTeacherRevenue = async (
 ) => {
   const dateMatch = buildDateMatch(startDate, endDate);
 
-  const result = await PaymentModel.aggregate([
+  const result = await ZoomMeeting.aggregate([
+    // 1. filter completed live classes
     {
       $match: {
         status: "COMPLETED",
@@ -105,61 +106,92 @@ const getTeacherRevenue = async (
       },
     },
 
-    {
-      $lookup: {
-        from: "enrollments",
-        localField: "enrollment",
-        foreignField: "_id",
-        as: "enrollment",
-      },
-    },
-    { $unwind: "$enrollment" },
-
+    // 2. course join
     {
       $lookup: {
         from: "courses",
-        localField: "enrollment.course",
+        localField: "courseId",
         foreignField: "_id",
         as: "course",
       },
     },
     { $unwind: "$course" },
 
+    // 3. resolve teacher from subject mapping
     {
       $addFields: {
-        teachers: "$course.assignSubWithTeacher.teacher",
+        teacher: {
+          $arrayElemAt: [
+            {
+              $filter: {
+                input: "$course.assignSubWithTeacher",
+                as: "item",
+                cond: {
+                  $eq: ["$$item.subject", "$subjectId"],
+                },
+              },
+            },
+            0,
+          ],
+        },
       },
     },
 
+    // 4. extract teacherId
     {
-      $unwind: "$teachers",
+      $addFields: {
+        teacherId: "$teacher.teacher",
+      },
     },
 
+    // 5. optional filter
     ...(teacherId
       ? [
           {
             $match: {
-              teachers: new Types.ObjectId(teacherId),
+              teacherId: new Types.ObjectId(teacherId),
             },
           },
         ]
       : []),
 
+    // 6. lookup teacher salary
     {
-      $group: {
-        _id: "$teachers",
-        totalRevenue: { $sum: "$amount" },
-        totalCourses: { $addToSet: "$course._id" },
-        totalStudents: { $sum: 1 },
+      $lookup: {
+        from: "teacherprofiles",
+        localField: "teacherId",
+        foreignField: "_id",
+        as: "teacherProfile",
+      },
+    },
+    { $unwind: "$teacherProfile" },
+
+    // 7. calculate revenue per class
+    {
+      $addFields: {
+        perClassEarning: "$teacherProfile.perClassSalary",
       },
     },
 
+    // 8. group result
+    {
+      $group: {
+        _id: "$teacherId",
+        totalRevenue: {
+          $sum: "$perClassEarning",
+        },
+        totalClasses: {
+          $sum: 1,
+        },
+      },
+    },
+
+    // 9. final projection
     {
       $project: {
         teacherId: "$_id",
         totalRevenue: 1,
-        totalStudents: 1,
-        totalCourses: { $size: "$totalCourses" },
+        totalClasses: 1,
       },
     },
 
@@ -170,7 +202,6 @@ const getTeacherRevenue = async (
 
   return result;
 };
-
 export const AnalyticsService = {
   getCourseRevenue,
   getTotalRevenue,
