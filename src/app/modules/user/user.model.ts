@@ -62,10 +62,10 @@ const addressSchema = new Schema({
     trim: true,
   },
 },
-{
-  _id: false,
-  timestamps: false
-}
+  {
+    _id: false,
+    timestamps: false
+  }
 );
 
 const TeacherProfileSchema = new Schema<ITeacherProfile>(
@@ -107,6 +107,12 @@ const TeacherProfileSchema = new Schema<ITeacherProfile>(
     },
 
     salary: {
+      type: Number,
+      default: 0,
+      required: false
+    },
+
+    perClassSalary: {
       type: Number,
       default: 0,
       required: false

@@ -37,6 +37,8 @@ export interface ITeacherProfile {
     designation?: string;
 
     salary?: number;
+    
+    perClassSalary?: number;
 
     bio?: string;
 

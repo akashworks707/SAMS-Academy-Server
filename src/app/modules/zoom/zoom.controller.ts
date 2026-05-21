@@ -112,9 +112,23 @@ const getMeetingsController = catchAsync(
   }
 );
 
+const updateMeetingController = catchAsync(async (req: Request, res: Response) => {
+    const meetingId = req.params.id as string;
+    const payload = req.body;
+
+    const meeting = await ZoomMeetingService.updateZoomMeetingService(meetingId, payload, )
+    sendResponse(res, {
+        statusCode: httpStatus.CREATED,
+        success: true,
+        message: "Meeting Updated Successfully",
+        data: meeting
+    })
+})
+
 
 export const ZoomMeetingController = {
   getSignatureController,
   createMeetingController,
-  getMeetingsController
+  getMeetingsController,
+  updateMeetingController
 }
