@@ -107,7 +107,7 @@ const updateQuiz = async (quizId: string, payload: any) => {
             $set: payload,
         },
         {
-            new: true,
+            returnDocument: "after",
             runValidators: true,
         }
     );

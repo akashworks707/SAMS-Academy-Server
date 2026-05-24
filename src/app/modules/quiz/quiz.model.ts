@@ -36,7 +36,7 @@ const quizSchema = new Schema<IQuiz>(
 
         teacherId: {
             type: Schema.Types.ObjectId,
-            ref: "TeacherProfile",
+            ref: "User",
             required: true,
         },
 
@@ -84,7 +84,7 @@ const quizSubmissionSchema = new Schema(
 
         studentId: {
             type: Schema.Types.ObjectId,
-            ref: "StudentProfile",
+            ref: "User",
             required: true,
         },
 

@@ -168,7 +168,7 @@ const updateEnrollment = async (id: string, payload: any) => {
     const result = await EnrollmentModel.findByIdAndUpdate(
         id,
         payload,
-        { new: true, runValidators: true }
+        {  returnDocument: "after", runValidators: true }
     );
 
     if (!result) {
@@ -182,7 +182,7 @@ const softDeleteEnrollment = async (id: string) => {
     const result = await EnrollmentModel.findByIdAndUpdate(
         id,
         { isDeleted: true, isActive: false },
-        { new: true }
+        {  returnDocument: "after" }
     );
 
     return { data: result };

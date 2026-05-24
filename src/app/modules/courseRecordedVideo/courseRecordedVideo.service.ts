@@ -70,7 +70,7 @@ const getSingleRecordedVideo = async (id: string) => {
 // update
 const updateRecordedVideo = async (id: string, payload: Partial<ICourseRecordedVideo>) => {
   const result = await CourseRecordedVideoModel.findByIdAndUpdate(id, payload, {
-    new: true,
+     returnDocument: "after",
     runValidators: true,
   });
 
@@ -82,7 +82,7 @@ const softDeleteRecordedVideo = async (id: string) => {
   const result = await CourseRecordedVideoModel.findByIdAndUpdate(
     id,
     { isDeleted: true, status: "DELETED" },
-    { new: true }
+    {  returnDocument: "after" }
   );
 
   return { data: result };

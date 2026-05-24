@@ -71,7 +71,7 @@ const updateSubject = async (
     id,
     payload,
     {
-      new: true,
+       returnDocument: "after",
       runValidators: true,
     }
   );
@@ -87,7 +87,7 @@ const softDeleteSubject = async (id: string) => {
       isActive: false,
     },
     {
-      new: true,
+       returnDocument: "after",
     }
   );
 

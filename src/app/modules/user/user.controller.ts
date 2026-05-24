@@ -89,18 +89,18 @@ const getAllTeachers = catchAsync(async (req: Request, res: Response, next: Next
     })
 })
 
-const updateProfile = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const payload = req.body;
+// const updateProfile = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+//     const payload = req.body;
 
-    const verifiedToken = req.user;
-    const user = await UserServices.updateProfile(payload, verifiedToken as JwtPayload)
-    sendResponse(res, {
-        statusCode: httpStatus.CREATED,
-        success: true,
-        message: "Profile Updated Successfully",
-        data: user
-    })
-})
+//     const verifiedToken = req.user;
+//     const user = await UserServices.updateProfile(payload, verifiedToken as JwtPayload)
+//     sendResponse(res, {
+//         statusCode: httpStatus.CREATED,
+//         success: true,
+//         message: "Profile Updated Successfully",
+//         data: user
+//     })
+// })
 
 const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.params.id as string;
@@ -137,6 +137,5 @@ export const UserControllers = {
     getAllTeachers,
     getSingleUser,
     deleteUser,
-    updateUser,
-    updateProfile
+    updateUser
 }

@@ -11,29 +11,6 @@ const router = express.Router();
 router.post(
   "/create-user",
   multerUpload.single("picture"),
-  (req, res, next) => {
-    try {
-      if (req.body.address) {
-        req.body.address = JSON.parse(req.body.address);
-      }
-
-      if (req.body.roll) {
-        req.body.roll = Number(req.body.roll);
-      }
-
-      if (req.body.salary) {
-        req.body.salary = Number(req.body.salary);
-      }
-
-      if (req.body.experience) {
-        req.body.experience = Number(req.body.experience);
-      }
-
-      next();
-    } catch (error) {
-      next(error);
-    }
-  },
   validateRequest(createUserZodSchema),
   UserControllers.createUser
 );
@@ -44,8 +21,13 @@ router.get("/all-students", checkAuth(...Object.values(Role)), UserControllers.g
 router.get("/all-teachers", checkAuth(Role.ADMIN), UserControllers.getAllTeachers)
 router.get("/:id", checkAuth(...Object.values(Role)), UserControllers.getSingleUser)
 router.delete("/:id", checkAuth(Role.ADMIN), UserControllers.deleteUser)
-router.patch("/update-profile", checkAuth(...Object.values(Role)), validateRequest(updateUserZodSchema), UserControllers.updateProfile)
-router.patch("/:id", checkAuth(Role.ADMIN), validateRequest(updateUserZodSchema), UserControllers.updateUser)
-
+// router.patch("/update-profile", checkAuth(...Object.values(Role)), validateRequest(updateUserZodSchema), UserControllers.updateProfile)
+router.patch(
+  "/:id",
+  checkAuth(Role.ADMIN),
+  multerUpload.single("picture"),
+  validateRequest(updateUserZodSchema),
+  UserControllers.updateUser
+);
 export const userRoutes = router;
 
