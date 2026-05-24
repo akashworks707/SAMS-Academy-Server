@@ -1,210 +1,57 @@
-import { Schema, model, Types } from "mongoose";
-import {
-  IStudentProfile,
-  ITeacherProfile,
-  IUser,
-  Role,
-} from "./user.interface";
+import { Schema, model } from "mongoose";
+import { IUser, Role } from "./user.interface";
+
+const addressSchema = new Schema(
+  {
+    division: String,
+    district: String,
+    thana: String,
+    union: String,
+  },
+  { _id: false }
+);
 
 const userSchema = new Schema<IUser>(
   {
-    name: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
-      trim: true,
-    },
-    password: {
-      type: String,
-      default: null,
-    },
-    picture: {
-      type: String,
-    },
+    name: { type: String, required: true, trim: true },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, default: null },
+    picture: String,
+    phone: { type: String, default: "" },
     role: {
       type: String,
       enum: Object.values(Role),
       default: Role.STUDENT,
     },
-    phone: {
-      type: String,
-      default: "",
+
+    address: addressSchema,
+    isActive: {
+      type: Boolean,
+      default: true
     },
+    isDeleted: {
+      type: Boolean,
+      default: false
+    },
+    // teacher
+    qualification: String,
+    experience: Number,
+    designation: String,
+    salary: Number,
+    perClassSalary: Number,
+    bio: String,
+    assignedSubjects: [{ type: Schema.Types.ObjectId, ref: "Subject" }],
+    assignedCourses: [{ type: Schema.Types.ObjectId, ref: "Course" }],
+
+    // student
+    studentId: String,
+    section: String,
+    roll: Number,
+    guardianName: String,
+    guardianPhone: String,
+    dateOfBirth: Date,
   },
-  {
-    timestamps: true,
-  },
+  { timestamps: true }
 );
 
-export const User = model("User", userSchema);
-
-const addressSchema = new Schema({
-  division: {
-    type: String,
-    trim: true,
-  },
-  district: {
-    type: String,
-    trim: true,
-  },
-  thana: {
-    type: String,
-    trim: true,
-  },
-  union: {
-    type: String,
-    trim: true,
-  },
-},
-  {
-    _id: false,
-    timestamps: false
-  }
-);
-
-const TeacherProfileSchema = new Schema<ITeacherProfile>(
-  {
-    userId: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-      unique: true,
-      index: true,
-    },
-
-    address: {
-      type: addressSchema,
-      required: false,
-    },
-
-    dateOfBirth: {
-      type: Date,
-      required: false
-    },
-
-    qualification: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-
-    experience: {
-      type: Number,
-      default: 0,
-      required: false
-    },
-
-    designation: {
-      type: String,
-      default: "Teacher",
-      required: false
-    },
-
-    salary: {
-      type: Number,
-      default: 0,
-      required: false
-    },
-
-    perClassSalary: {
-      type: Number,
-      default: 0,
-      required: false
-    },
-
-    bio: {
-      type: String,
-      required: false
-    },
-
-    assignedSubjects: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Subject",
-      },
-    ],
-
-    assignedCourses: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Course",
-      },
-    ],
-  },
-  {
-    timestamps: true,
-  },
-);
-
-export const TeacherProfile = model<ITeacherProfile>(
-  "TeacherProfile",
-  TeacherProfileSchema,
-);
-
-const StudentProfileSchema = new Schema<IStudentProfile>(
-  {
-    userId: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-      unique: true,
-      index: true,
-    },
-
-    dateOfBirth: {
-      type: Date,
-    },
-
-    address: {
-      type: addressSchema,
-      required: true,
-    },
-
-    studentId: {
-      type: String,
-      required: true,
-      unique: true,
-    },
-
-    section: {
-      type: String,
-    },
-
-    roll: {
-      type: Number,
-    },
-
-    guardianName: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-
-    guardianPhone: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-
-    // enrolledCourses: [
-    //   {
-    //     type: Schema.Types.ObjectId,
-    //     ref: "Course",
-    //   },
-    // ],
-  },
-  {
-    timestamps: true,
-  },
-);
-
-export const StudentProfile = model<IStudentProfile>(
-  "StudentProfile",
-  StudentProfileSchema,
-);
+export const User = model<IUser>("User", userSchema);

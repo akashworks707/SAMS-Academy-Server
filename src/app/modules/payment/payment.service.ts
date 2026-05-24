@@ -3,11 +3,11 @@ import { EnrollmentModel } from "../enrollment/enrollment.model";
 import { PaymentModel } from "./payment.model";
 import { PaymentStatus } from "./payment.interface";
 import { SSLCommerzService } from "../sslCommerz/sslCommerz.service";
-import { StudentProfile } from "../user/user.model";
 import AppError from "../../errorHelpers/appError";
 import httpStatus from "http-status-codes"
 import { EnrollmentStatus } from "../enrollment/enrollment.interface";
 import mongoose from "mongoose";
+import { User } from "../user/user.model";
 
 
 const initPayment = async (
@@ -18,30 +18,27 @@ const initPayment = async (
         .findOne({ enrollment: enrollmentId });
 
     if (!payment) {
-        throw new AppError( httpStatus.NOT_FOUND,"Payment not found");
+        throw new AppError(httpStatus.NOT_FOUND, "Payment not found");
     }
 
     const enrollment = await EnrollmentModel
         .findById(enrollmentId)
 
-    const student = await StudentProfile.findOne({ userId: enrollment?.student }).populate("userId")
+    const student = await User.findById(enrollment?.student)
 
     if (!student) {
         throw new AppError(httpStatus.BAD_REQUEST, "Student not found")
     }
 
-    const studentName = (student?.userId as any)?.name
-    const studentEmail = (student?.userId as any)?.email
-    const studentPhone = (student?.userId as any)?.phone
 
     const sslPayload = {
         amount: payment.amount,
         transactionId: payment.transactionId,
-        name: studentName,
-        email: studentEmail,
-        phoneNumber: studentPhone,
-        address: student.address.thana || "Tetulia",
-        city: student.address.district || "Panchangrh"
+        name: student.name,
+        email: student.email,
+        phoneNumber: student.phone,
+        address: student?.address?.thana || "N/A",
+        city: student?.address?.district || "N/A"
     };
 
     const sslPayment = await SSLCommerzService.sslPaymentInit(
@@ -67,7 +64,7 @@ const successPayment = async (query: Record<string, string>) => {
             await PaymentModel.findOneAndUpdate(
                 { transactionId },
                 { status: PaymentStatus.COMPLETED },
-                { new: true, session }
+                {  returnDocument: "after", runValidators: true, session }
             );
 
         if (!updatedPayment) {
@@ -112,7 +109,7 @@ const failPayment = async (query: Record<string, string>) => {
             await PaymentModel.findOneAndUpdate(
                 { transactionId },
                 { status: PaymentStatus.FAILED },
-                { new: true, session }
+                {  returnDocument: "after", runValidators: true, session }
             );
 
         if (!updatedPayment) {
@@ -155,7 +152,7 @@ const cancelPayment = async (query: Record<string, string>) => {
             await PaymentModel.findOneAndUpdate(
                 { transactionId },
                 { status: PaymentStatus.CANCELLED },
-                { new: true, session }
+                {  returnDocument: "after", runValidators: true, session }
             );
 
         if (!updatedPayment) {

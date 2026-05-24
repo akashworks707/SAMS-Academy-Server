@@ -3,11 +3,12 @@ import { QueryBuilder } from "../../utils/QueryBuilder";
 import { CourseRecordedVideoModel } from "../courseRecordedVideo/courseRecordedVideo.model";
 import { EnrollmentModel } from "../enrollment/enrollment.model";
 import { Role } from "../user/user.interface";
-import { TeacherProfile, User } from "../user/user.model";
+import { User } from "../user/user.model";
 import { ZoomMeeting } from "../zoom/zoom.model";
 import { courseSearchableFields } from "./course.constants";
 import { ICourse } from "./course.interface";
 import { CourseModel } from "./course.model";
+import httpStatus from "http-status-codes"
 
 const createCourse = async (
     payload: Partial<ICourse>
@@ -23,26 +24,6 @@ const createCourse = async (
     }
 
     const result = await CourseModel.create(payload);
-
-    await Promise.all(
-        payload.assignSubWithTeacher?.map(async (item) => {
-            const teacher = item.teacher.toString();
-            const subject = item.subject.toString();
-
-            await TeacherProfile.findByIdAndUpdate(
-                teacher,
-                {
-                    $addToSet: {
-                        assignedSubjects: subject,
-                        assignedCourses: result._id.toString(),
-                    },
-                },
-                { new: true }
-            );
-        }) || []
-
-
-    );
 
     return { data: result };
 };
@@ -67,7 +48,7 @@ const getAllCourses = async (query: Record<string, string>) => {
         })
         .populate({
             path: "assignSubWithTeacher.teacher",
-            model: "TeacherProfile",
+            model: "User",
         })
 
     const meta = await queryBuilder.getMeta();
@@ -119,14 +100,7 @@ const getSingleCourse = async (slug: string) => {
             path: "assignSubWithTeacher",
             populate: [
                 { path: "subject", model: "Subject" },
-                {
-                    path: "teacher",
-                    model: "TeacherProfile",
-                    populate: {
-                        path: "userId",
-                        model: "User",
-                    },
-                },
+                {path: "teacher", model: "User"}
             ],
         })
 
@@ -144,26 +118,23 @@ const getSingleCourse = async (slug: string) => {
     };
 };
 
-
 const getMyCourses = async (userId: string) => {
+    const user = await User.findById(userId);
 
-    const loggedInUser = await User.findById(userId)
+    if (!user) {
+        throw new AppError(httpStatus.NOT_FOUND, "User not found");
+    }
 
-    let result;
+    let result: any[] = [];
 
-    if (loggedInUser?.role === Role.STUDENT) {
+    if (user?.role === Role.STUDENT) {
         result = await EnrollmentModel.find({ student: userId }).populate("course")
     }
 
-    if (loggedInUser?.role === Role.TEACHER) {
-        const teacherProfile = await TeacherProfile.findOne({ userId });
-
-        if (!teacherProfile) {
-            return { data: [] };
-        }
+    if (user?.role === Role.TEACHER) {
 
         result = await CourseModel.find({
-            "assignSubWithTeacher.teacher": teacherProfile._id
+            "assignSubWithTeacher.teacher": user._id
         });
     }
 
@@ -178,7 +149,7 @@ const updateCourse = async (
         id,
         payload,
         {
-            new: true,
+             returnDocument: "after",
             runValidators: true,
         }
     );
@@ -194,7 +165,7 @@ const softDeleteCourse = async (id: string) => {
             isActive: false,
         },
         {
-            new: true,
+           returnDocument: "after",
         }
     );
 

@@ -74,7 +74,7 @@ const courseSchema = new Schema<ICourse>(
                 },
                 teacher: {
                     type: Schema.Types.ObjectId,
-                    ref: "TeacherProfile",
+                    ref: "User",
                     required: true,
                 }
             }

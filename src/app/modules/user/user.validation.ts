@@ -49,6 +49,7 @@ export const createUserZodSchema = z.object({
   experience: z.number().optional(),
   designation: z.string().optional(),
   salary: z.number().optional(),
+  perClassSalary: z.number().optional(),
   bio: z.string().optional(),
 
   assignedSubjects: z.array(z.string()).optional(),

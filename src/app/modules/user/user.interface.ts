@@ -6,83 +6,44 @@ export enum Role {
     STUDENT = "STUDENT",
 }
 
+export interface IAddress {
+    division?: string;
+    district?: string;
+    thana?: string;
+    union?: string;
+}
+
 export interface IUser {
     _id?: Types.ObjectId;
+
+    // common
     name: string;
     email: string;
     password: string;
     picture?: string;
     phone: string;
     role: Role;
-}
+    isDeleted: boolean;
+    isActive: boolean;
 
-export interface IAddress {
-    division: string;
-    district: string;
-    thana: string;
-    union: string;
-}
-
-export interface ITeacherProfile {
-    userId: Types.ObjectId;
-
+    // address
     address?: IAddress;
 
-    qualification: string;
-    
-    dateOfBirth?: Date;
-    
+    // teacher fields
+    qualification?: string;
     experience?: number;
-
     designation?: string;
-
     salary?: number;
-    
     perClassSalary?: number;
-
     bio?: string;
-
     assignedSubjects?: Types.ObjectId[];
-
     assignedCourses?: Types.ObjectId[];
 
-}
-
-// export interface IStudentProfile {
-//   userId: Types.ObjectId;
-
-//   studentId: string;
-
-//   address: string;
-
-//   section?: string;
-
-//   roll?: number;
-
-//   guardianName: string;
-
-//   guardianPhone: string;
-
-//   enrolledCourses?: Types.ObjectId[];
-
-// }
-
-
-
-export interface IStudentProfile {
-    userId: Types.ObjectId;
-
-    studentId: string;
-    dateOfBirth?: Date;
-
-    address: IAddress;
-
+    // student fields
+    studentId?: string;
     section?: string;
-
     roll?: number;
-
-    guardianName: string;
-
-    guardianPhone: string;
-    enrolledCourses?: Types.ObjectId[];
+    guardianName?: string;
+    guardianPhone?: string;
+    dateOfBirth?: Date;
 }

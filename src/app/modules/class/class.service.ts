@@ -63,7 +63,7 @@ const getSingleClass = async (id: string) => {
 
 const updateClass = async (id: string, payload: any) => {
   const result = await ClassModel.findByIdAndUpdate(id, payload, {
-    new: true,
+    returnDocument: "after",
     runValidators: true,
   });
 
@@ -75,7 +75,7 @@ const softDeleteClass = async (id: string) => {
   const result = await ClassModel.findByIdAndUpdate(
     id,
     { isDeleted: true, isActive: false },
-    { new: true }
+    {  returnDocument: "after", }
   );
 
   return { data: result };
