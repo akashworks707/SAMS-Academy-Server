@@ -2,6 +2,7 @@ import z from "zod";
 
 export const createCourseRecordedVideoValidation = z.object({
   course: z.string().min(1, "Course is required"),
+  subject: z.string().min(1, "Subject is required"),
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
   videoUrl: z.string().min(1, "Video URL is required"),

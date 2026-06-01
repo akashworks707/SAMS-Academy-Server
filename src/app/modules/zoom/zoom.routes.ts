@@ -26,4 +26,16 @@ router.get("/meetings",
     checkAuth(...Object.values(Role)),
     ZoomMeetingController.getMeetingsController);
 
+
+router.delete(
+    "/:id",
+    checkAuth(Role.ADMIN, Role.TEACHER),
+    ZoomMeetingController.deleteMeetingController
+);
+
+router.patch(
+    "/soft-delete/:id",
+    checkAuth(Role.ADMIN, Role.TEACHER),
+    ZoomMeetingController.softDeleteMeetingController
+);
 export const ZoomRoutes = router;

@@ -34,4 +34,6 @@ export interface IZoomMeeting {
 
   hostId: string;
   hostEmail: string;
+
+  isDeleted?: boolean;
 }

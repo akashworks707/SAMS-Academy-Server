@@ -39,7 +39,8 @@ const ZoomMeetingSchema = new Schema<IZoomMeeting>(
     startUrl: { type: String, required: true },
 
     hostId: { type: String },
-    hostEmail: { type: String }
+    hostEmail: { type: String },
+    isDeleted: { type: Boolean, default: false }
   },
   { timestamps: true }
 );

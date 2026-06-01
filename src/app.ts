@@ -13,6 +13,7 @@ const app = express()
 app.use(cors({
     origin: [
         "http://localhost:3000",
+        "https://sams-academy-five.vercel.app",
         envVars.FRONTEND_URL,
     ],
     credentials: true

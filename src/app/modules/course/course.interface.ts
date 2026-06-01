@@ -44,16 +44,6 @@ export interface ICourse {
 
   totalClasses?: number;
 
-  // liveClasses?: {
-  //   title: string;
-  //   liveLink: string;
-  // };
-
-  // recordedClassLinks?: {
-  //   title: string;
-  //   videoLink: string;
-  // }[];
-
   certificate?: boolean;
 
   status?: "upcoming" | "running" | "completed";

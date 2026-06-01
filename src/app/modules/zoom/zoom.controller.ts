@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 
 import {
   generateSignature,
@@ -66,6 +66,9 @@ const createMeetingController = catchAsync(async (
   res: Response
 ) => {
 
+  console.log("Request Body:", req.body); // Debug log to check the request body
+
+
   const meeting = await ZoomMeetingService.createZoomMeeting(req.body);
 
   sendResponse(res, {
@@ -126,9 +129,49 @@ const updateMeetingController = catchAsync(async (req: Request, res: Response) =
 })
 
 
+const softDeleteMeetingController = catchAsync(async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const result =
+    await ZoomMeetingService.softDeleteZoomMeeting(
+      req.params.id as string
+    );
+
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Meeting deleted (soft delete)",
+    data: result.data,
+  });
+});
+
+const deleteMeetingController = catchAsync(async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const result =
+    await ZoomMeetingService.deleteZoomMeeting(
+      req.params.id as string
+    );
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Meeting deleted (hard delete)",
+    data: result.data,
+  });
+});
+
+
 export const ZoomMeetingController = {
   getSignatureController,
   createMeetingController,
   getMeetingsController,
-  updateMeetingController
+  updateMeetingController,
+  deleteMeetingController,
+  softDeleteMeetingController,
 }
