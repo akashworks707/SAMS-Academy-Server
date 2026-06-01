@@ -2,6 +2,7 @@ import AppError from "../../errorHelpers/appError";
 import { QueryBuilder } from "../../utils/QueryBuilder";
 import { CourseRecordedVideoModel } from "../courseRecordedVideo/courseRecordedVideo.model";
 import { EnrollmentModel } from "../enrollment/enrollment.model";
+import { QuizModel } from "../quiz/quiz.model";
 import { Role } from "../user/user.interface";
 import { User } from "../user/user.model";
 import { ZoomMeeting } from "../zoom/zoom.model";
@@ -107,12 +108,14 @@ const getSingleCourse = async (slug: string) => {
 
     const courseRecordedVideos = await CourseRecordedVideoModel.find({ course: result?._id })
     const liveClasses = await ZoomMeeting.find({ courseId: result?._id })
+    const quiz = await QuizModel.find({ courseId: result?._id })
 
     return {
         data: {
             result,
             courseRecordedVideos,
-            liveClasses
+            liveClasses,
+            quiz
         }
 
     };

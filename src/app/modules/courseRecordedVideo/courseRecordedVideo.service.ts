@@ -14,7 +14,11 @@ const createRecordedVideo = async (payload: ICourseRecordedVideo) => {
 
 // get all
 const getAllRecordedVideos = async (query: Record<string, string>) => {
-  const baseQuery = CourseRecordedVideoModel.find({ isDeleted: false });
+  const baseQuery = CourseRecordedVideoModel.find({ isDeleted: false }).sort({ createdAt: 1 });
+
+  if (!query.sort) {
+    query.sort = "createdAt"
+  }
 
   const queryBuilder = new QueryBuilder(baseQuery, query);
 
@@ -70,7 +74,7 @@ const getSingleRecordedVideo = async (id: string) => {
 // update
 const updateRecordedVideo = async (id: string, payload: Partial<ICourseRecordedVideo>) => {
   const result = await CourseRecordedVideoModel.findByIdAndUpdate(id, payload, {
-     returnDocument: "after",
+    returnDocument: "after",
     runValidators: true,
   });
 
@@ -82,7 +86,7 @@ const softDeleteRecordedVideo = async (id: string) => {
   const result = await CourseRecordedVideoModel.findByIdAndUpdate(
     id,
     { isDeleted: true, status: "DELETED" },
-    {  returnDocument: "after" }
+    { returnDocument: "after" }
   );
 
   return { data: result };
