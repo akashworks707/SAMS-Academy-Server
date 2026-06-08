@@ -137,7 +137,8 @@ const getMyCourses = async (userId: string) => {
     if (user?.role === Role.TEACHER) {
 
         result = await CourseModel.find({
-            "assignSubWithTeacher.teacher": user._id
+            "assignSubWithTeacher.teacher": user._id,
+            isDeleted: false
         });
     }
 
