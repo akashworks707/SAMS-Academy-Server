@@ -83,6 +83,9 @@ const updateZoomMeetingService = async (meetingId: string, payload: Partial<IZoo
   if (payload.classTitle) {
     updatePayload.classTitle = payload.classTitle
   }
+  if (payload.topic) {
+    updatePayload.topic = payload.topic
+  }
   if (payload.courseId) {
     updatePayload.courseId = payload.courseId
   }

@@ -7,6 +7,9 @@ import { QueryBuilder } from "../../utils/QueryBuilder";
 import { userSearchableFields } from "./user.constants";
 import { JwtPayload } from "jsonwebtoken";
 import { _null } from "zod/v4/core";
+import { EnrollmentModel } from "../enrollment/enrollment.model";
+import { Types } from "mongoose";
+import { CourseModel } from "../course/course.model";
 
 
 const createUserService = async (payload: any, session?: any) => {
@@ -49,13 +52,119 @@ const getMe = async (userId: string) => {
     return { data: user };
 };
 
-const getAllTeachers = async (query: Record<string, string>) => {
-    const baseQuery = User.find({ role: Role.TEACHER });
+// const getAllTeachers = async (query: Record<string, string>) => {
+//     const baseQuery = User.find({ role: Role.TEACHER });
 
-    const queryBuilder = new QueryBuilder(baseQuery, query);
+//     const queryBuilder = new QueryBuilder(baseQuery, query);
+
+//     const data = await queryBuilder
+//         .filter()
+//         .search(userSearchableFields)
+//         .sort()
+//         .fields()
+//         .paginate()
+//         .build();
+
+//     const meta = await queryBuilder.getMeta();
+
+//     return { data, meta };
+// };
+
+// const getAllStudents = async (query: Record<string, string>) => {
+//     const baseQuery = User.find({ role: Role.STUDENT, isDeleted: false });
+
+//     const queryBuilder = new QueryBuilder(baseQuery, query);
+
+//     const data = await queryBuilder
+//         .filter()
+//         .search(userSearchableFields)
+//         .sort()
+//         .fields()
+//         .paginate()
+//         .build();
+
+//     const meta = await queryBuilder.getMeta();
+
+//     return { data, meta };
+// };
+
+
+
+// const getAllStudents = async (query: Record<string, string>) => {
+
+//     let filter: any = {
+//         role: Role.STUDENT,
+//         // isDeleted: false,
+//     };
+
+//     console.log("Query:", query);
+
+//     // Course filter
+//     if (query.course) {
+//         const enrollments = await EnrollmentModel.find({
+//             course: query.course,
+//             // isDeleted: false,
+//             // isActive: true,
+//         })
+// console.log("Enrollments for course filter:", enrollments);
+//         const studentIds = enrollments.map(
+//             (enrollment) => enrollment.student
+//         );
+
+//         filter._id = { $in: studentIds };
+//     }
+
+//     console.log("Final filter for students:", filter);
+
+//     const baseQuery = User.find(filter);
+
+//     const queryBuilder = new QueryBuilder(baseQuery, query);
+
+//     const data = await queryBuilder
+//         .filter()
+//         .search(userSearchableFields)
+//         .sort()
+//         .fields()
+//         .paginate()
+//         .build();
+
+//     const meta = await queryBuilder.getMeta();
+
+//     return { data, meta };
+// };
+
+
+const getAllTeachers = async (query: Record<string, string>) => {
+
+    let teacherIds: Types.ObjectId[] | undefined;
+
+    // 🔥 course filter
+    if (query.course) {
+        const course = await CourseModel.findById(query.course);
+
+        if (course?.assignSubWithTeacher?.length) {
+            teacherIds = course.assignSubWithTeacher.map(
+                (item) => item.teacher
+            );
+        }
+    }
+
+    const filter: any = {
+        role: Role.TEACHER,
+        isDeleted: false,
+    };
+
+    if (teacherIds) {
+        filter._id = { $in: teacherIds };
+    }
+
+    const baseQuery = User.find(filter);
+
+    const { course, ...restQuery } = query;
+
+    const queryBuilder = new QueryBuilder(baseQuery, restQuery);
 
     const data = await queryBuilder
-        .filter()
         .search(userSearchableFields)
         .sort()
         .fields()
@@ -68,12 +177,35 @@ const getAllTeachers = async (query: Record<string, string>) => {
 };
 
 const getAllStudents = async (query: Record<string, string>) => {
-    const baseQuery = User.find({ role: Role.STUDENT, isDeleted: false });
 
-    const queryBuilder = new QueryBuilder(baseQuery, query);
+    let studentIds: Types.ObjectId[] | undefined;
+
+    if (query.course) {
+        const enrollments = await EnrollmentModel.find({
+            course: query.course,
+            isDeleted: false,
+            isActive: true,
+        });
+
+        studentIds = enrollments.map(e => e.student);
+    }
+
+    const filter: any = {
+        role: Role.STUDENT,
+        isDeleted: false,
+    };
+
+    if (studentIds) {
+        filter._id = { $in: studentIds };
+    }
+
+    const baseQuery = User.find(filter);
+
+    const { course, ...restQuery } = query;
+
+    const queryBuilder = new QueryBuilder(baseQuery, restQuery);
 
     const data = await queryBuilder
-        .filter()
         .search(userSearchableFields)
         .sort()
         .fields()
@@ -84,6 +216,8 @@ const getAllStudents = async (query: Record<string, string>) => {
 
     return { data, meta };
 };
+
+
 
 const getAllUsers = async (query: Record<string, string>) => {
     const baseQuery = User.find({ isDeleted: false });
