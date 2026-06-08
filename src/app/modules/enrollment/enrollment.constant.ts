@@ -1,1 +1,1 @@
-export const enrollmentSearchableFields = ["student.name", "course.title", "referredBy.name"];
+export const enrollmentSearchableFields = ["student.name", "course.title", "referredBy.name", "transactionId"];
