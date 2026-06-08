@@ -69,9 +69,65 @@ const cancelPayment = catchAsync(
     }
 );
 
+
+const getAllPayments = catchAsync(async (req: Request, res: Response) => {
+    const result = await PaymentService.getAllPayments(
+        req.query as Record<string, string>
+    );
+
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "All payments retrieved successfully",
+        data: result.data,
+        meta: result.meta,
+    });
+});
+
+const getSinglePayment = catchAsync(async (req: Request, res: Response) => {
+    const result = await PaymentService.getSinglePayment(req.params.id as string);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Payment retrieved successfully",
+        data: result.data,
+    });
+});
+
+const updatePayment = catchAsync(async (req: Request, res: Response) => {
+   console.log(req.params.id, req.body);
+    const result = await PaymentService.updatePayment(
+        req.params.id as string,
+        req.body
+    );
+
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Payment updated successfully",
+        data: result.data,
+    });
+});
+
+const deletePayment = catchAsync(async (req: Request, res: Response) => {
+    const result = await PaymentService.deletePayment(req.params.id as string);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Payment deleted successfully",
+        data: result.data,
+    });
+});
+
 export const PaymentController = {
-    initPayment,
-    successPayment,
-    failPayment,
-    cancelPayment,
+    initPayment,   
+    successPayment,  
+    failPayment,    
+    cancelPayment,   
+    getAllPayments,   
+    getSinglePayment, 
+    updatePayment,     
+    deletePayment,     
 };

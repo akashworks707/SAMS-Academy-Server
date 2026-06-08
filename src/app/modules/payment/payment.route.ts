@@ -1,6 +1,8 @@
 
 import express from "express";
 import { PaymentController } from "./payment.controller";
+import { checkAuth } from "../../middleware/checkAuth";
+import { Role } from "../user/user.interface";
 
 const router = express.Router();
 
@@ -23,5 +25,10 @@ router.post(
     "/cancel",
     PaymentController.cancelPayment
 );
+
+router.get("/all-payments", checkAuth(Role.ADMIN), PaymentController.getAllPayments);       // ✅
+router.get("/:id", checkAuth(Role.ADMIN, Role.STUDENT), PaymentController.getSinglePayment);              // ✅
+router.patch("/:id", checkAuth(Role.ADMIN), PaymentController.updatePayment);          // ✅
+router.delete("/:id", checkAuth(Role.ADMIN), PaymentController.deletePayment);
 
 export const paymentRoutes = router;
