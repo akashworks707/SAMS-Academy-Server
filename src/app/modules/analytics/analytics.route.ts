@@ -6,6 +6,12 @@ import { AnalyticsController } from "./analytics.controller";
 const router = express.Router();
 
 router.get(
+  "/all-analytics",
+  checkAuth(Role.ADMIN),
+  AnalyticsController.getAllAnalytics
+);
+
+router.get(
   "/course-revenue",
   checkAuth(Role.ADMIN),
   AnalyticsController.getCourseRevenue

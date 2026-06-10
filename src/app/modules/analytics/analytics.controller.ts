@@ -82,9 +82,128 @@ const getTeacherRevenueAdmin = catchAsync(
   }
 );
 
+// const getAllRevenue = catchAsync(async (req, res) => {
+//   const { startDate, endDate, sortBy, sortOrder } = req.query;
+
+//   const teacherRevenue = await AnalyticsService.getTeacherRevenue(
+//     undefined,
+//     startDate as string,
+//     endDate as string,
+//     sortBy as string,
+//     sortOrder as "asc" | "desc"
+//   );
+
+//   const courseRevenue = await AnalyticsService.getCourseRevenue(
+//     startDate as string,
+//     endDate as string,
+//     sortBy as string,        // ← added
+//     sortOrder as "asc" | "desc"  // ← added
+//   );
+
+//   const totalRevenue = await AnalyticsService.getTotalRevenue(
+//     startDate as string,
+//     endDate as string
+//   );
+
+//   sendResponse(res, {
+//     success: true,
+//     statusCode: httpStatus.OK,
+//     message: "All revenue data retrieved successfully",
+//     data: { courseRevenue, teacherRevenue, totalRevenue },
+//   });
+// });
+
+
+
+// ─── All Analytics (single combined endpoint for admin dashboard) ─────────────
+
+const getAllAnalytics = catchAsync(async (req: Request, res: Response) => {
+  const { startDate, endDate, sortBy, sortOrder, granularity } = req.query;
+
+  const [
+    stats,
+    teacherRevenue,
+    courseRevenue,
+    totalRevenue,
+    paymentAnalytics,
+    enrollmentAnalytics,
+    studentAnalytics,
+    dashboardChartData,
+    enrollmentStudentChartData,
+  ] = await Promise.all([
+    AnalyticsService.getDashboardStats(
+      startDate as string,
+      endDate as string
+    ),
+    AnalyticsService.getTeacherRevenue(
+      undefined,
+      startDate as string,
+      endDate as string,
+      sortBy as string,
+      sortOrder as "asc" | "desc"
+    ),
+    AnalyticsService.getCourseRevenue(
+      startDate as string,
+      endDate as string,
+      sortBy as string,
+      sortOrder as "asc" | "desc"
+    ),
+    AnalyticsService.getTotalRevenue(
+      startDate as string,
+      endDate as string
+    ),
+    AnalyticsService.getPaymentAnalytics(
+      startDate as string,
+      endDate as string,
+      sortBy as string,
+      sortOrder as "asc" | "desc"
+    ),
+    AnalyticsService.getEnrollmentAnalytics(
+      startDate as string,
+      endDate as string,
+      sortBy as string,
+      sortOrder as "asc" | "desc"
+    ),
+    AnalyticsService.getStudentAnalytics(
+      startDate as string,
+      endDate as string,
+      sortBy as string,
+      sortOrder as "asc" | "desc"
+    ),
+    AnalyticsService.getDashboardChartData(
+      startDate as string,
+      endDate as string,
+      granularity as "day" | "week" | "month" | "year"
+    ),
+    AnalyticsService.getEnrollmentStudentChartData(
+      startDate as string,
+      endDate as string,
+      granularity as "day" | "week" | "month" | "year"
+    ),
+  ]);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "All analytics data retrieved successfully",
+    data: {
+      stats,
+      revenue: { courseRevenue, teacherRevenue, totalRevenue },
+      payments: paymentAnalytics,
+      enrollments: enrollmentAnalytics,
+      students: studentAnalytics,
+      charts: {
+        dashboard: dashboardChartData,
+        enrollmentStudent: enrollmentStudentChartData,
+      },
+    },
+  });
+});
+
 export const AnalyticsController = {
   getCourseRevenue,
   getTotalRevenue,
   getMyRevenue,
   getTeacherRevenueAdmin,
+  getAllAnalytics
 };
