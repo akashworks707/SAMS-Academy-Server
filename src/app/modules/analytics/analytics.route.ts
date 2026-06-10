@@ -2,6 +2,7 @@ import express from "express";
 import { checkAuth } from "../../middleware/checkAuth";
 import { Role } from "../user/user.interface";
 import { AnalyticsController } from "./analytics.controller";
+import { getTeacherAnalytics } from "./teacherAnalytics.controller";
 
 const router = express.Router();
 
@@ -33,6 +34,12 @@ router.get(
   "/teacher-revenue",
   checkAuth(Role.ADMIN),
   AnalyticsController.getTeacherRevenueAdmin
+);
+
+router.get(
+  "/teacher",
+  checkAuth(Role.ADMIN, Role.TEACHER),
+  getTeacherAnalytics
 );
 
 export const analyticsRoutes = router;
