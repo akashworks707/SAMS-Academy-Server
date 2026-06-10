@@ -8,6 +8,8 @@ import httpStatus from "http-status-codes"
 import { EnrollmentStatus } from "../enrollment/enrollment.interface";
 import mongoose from "mongoose";
 import { User } from "../user/user.model";
+import { QueryBuilder } from "../../utils/QueryBuilder";
+import { paymentSearchableFields } from "./payment.constants";
 
 
 const initPayment = async (
@@ -64,7 +66,7 @@ const successPayment = async (query: Record<string, string>) => {
             await PaymentModel.findOneAndUpdate(
                 { transactionId },
                 { status: PaymentStatus.COMPLETED },
-                {  returnDocument: "after", runValidators: true, session }
+                { returnDocument: "after", runValidators: true, session }
             );
 
         if (!updatedPayment) {
@@ -109,7 +111,7 @@ const failPayment = async (query: Record<string, string>) => {
             await PaymentModel.findOneAndUpdate(
                 { transactionId },
                 { status: PaymentStatus.FAILED },
-                {  returnDocument: "after", runValidators: true, session }
+                { returnDocument: "after", runValidators: true, session }
             );
 
         if (!updatedPayment) {
@@ -152,7 +154,7 @@ const cancelPayment = async (query: Record<string, string>) => {
             await PaymentModel.findOneAndUpdate(
                 { transactionId },
                 { status: PaymentStatus.CANCELLED },
-                {  returnDocument: "after", runValidators: true, session }
+                { returnDocument: "after", runValidators: true, session }
             );
 
         if (!updatedPayment) {
@@ -184,9 +186,96 @@ const cancelPayment = async (query: Record<string, string>) => {
     }
 };
 
+const updatePayment = async (id: string, payload: any) => {
+    const session = await mongoose.startSession();
+
+    try {
+        session.startTransaction();
+
+        const updatedPayment = await PaymentModel.findByIdAndUpdate(
+            id,
+            payload,
+            { returnDocument: "after", runValidators: true, session }
+        );
+        if (!updatedPayment) {
+            throw new AppError(httpStatus.NOT_FOUND, "Payment not found");
+        }
+
+        if (payload.status) {
+            const statusMap: Record<string, string> = {
+                [PaymentStatus.COMPLETED]: EnrollmentStatus.COMPLETED,
+                [PaymentStatus.FAILED]: EnrollmentStatus.FAILED,
+                [PaymentStatus.CANCELLED]: EnrollmentStatus.CANCELLED,
+            };
+
+            const enrollmentStatus = statusMap[payload.status];
+
+            if (enrollmentStatus) {
+                await EnrollmentModel.findByIdAndUpdate(
+                    updatedPayment.enrollment,
+                    { status: enrollmentStatus },
+                    { session }
+                );
+            }
+        }
+
+        await session.commitTransaction();
+        return { data: updatedPayment };
+
+    } catch (error) {
+        await session.abortTransaction();
+        throw error;
+    } finally {
+        session.endSession();
+    }
+};
+
+const getAllPayments = async (query: Record<string, string>) => {
+    const queryBuilder = new QueryBuilder(
+        PaymentModel.find().populate("enrollment"),
+        query
+    );
+
+    const data = await queryBuilder
+        .search(paymentSearchableFields)
+        .filter()
+        .sort()
+        .fields()
+        .paginate()
+        .build();
+
+    const meta = await queryBuilder.getMeta();
+
+    return { data, meta };
+};
+
+
+
+
+
+const getSinglePayment = async (id: string) => {
+    const result = await PaymentModel.findById(id).populate("enrollment");
+
+    if (!result) {
+        throw new AppError(httpStatus.NOT_FOUND, "Payment not found");
+    }
+
+    return { data: result };
+};
+
+const deletePayment = async (id: string) => {
+    const result = await PaymentModel.findByIdAndDelete(id);
+    return { data: result };
+};
+
+
 export const PaymentService = {
     initPayment,
     successPayment,
     failPayment,
     cancelPayment,
+    updatePayment,
+    getAllPayments,
+    getSinglePayment,
+    deletePayment,
 };
