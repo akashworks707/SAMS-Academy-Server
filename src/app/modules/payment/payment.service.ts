@@ -249,10 +249,6 @@ const getAllPayments = async (query: Record<string, string>) => {
     return { data, meta };
 };
 
-
-
-
-
 const getSinglePayment = async (id: string) => {
     const result = await PaymentModel.findById(id).populate("enrollment");
 
